@@ -70,7 +70,7 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">⏰ 납부 마감일 (선택)</label>
                         <input type="date" id="due-date-input" class="w-full border border-pink-200 rounded-lg p-2 bg-white text-gray-600">
-                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 고지서 등 미리 등록 시 상단에 D-Day가 뜹니다.</p>
+                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 마감일을 적으면 상단에 알림 배너가 뜹니다.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📝 메모 (선택)</label>
@@ -91,7 +91,7 @@
             <ul id="recent-list" class="space-y-2 text-sm"></ul>
 
             <!-- 엑셀 내보내기 버튼 -->
-            <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E6FA] text-[#7B68EE] border border-[#C3B1E1] font-bold py-3 rounded-lg hover:bg-[#D8B4FE] hover:text-white transition">
+            <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E6FA] text-[#7B68EE] border border-[#C3B1E1] font-bold py-3 rounded-lg hover:bg-[#D8B4FE] hover:text-white transition shadow-sm">
                 📥 한셀/엑셀로 전체 데이터 다운로드
             </button>
         </div>
@@ -160,14 +160,14 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // 마감일이 존재하고, 오늘을 기준으로 14일 이내인 항목만 필터링
+            // 마감일이 존재하고, 아직 납부 안 한(isPaid가 false) 항목 중 14일 이내인 것 필터링
             const upcoming = expenses.filter(e => {
-                if (!e.dueDate) return false;
+                if (!e.dueDate || e.isPaid) return false; 
                 const dDate = new Date(e.dueDate);
                 dDate.setHours(0, 0, 0, 0);
                 const diffTime = dDate - today;
                 const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                return diffDays >= 0 && diffDays <= 14; // 마감일이 지났으면(-값) 배너에서 사라짐
+                return diffDays >= 0 && diffDays <= 14; 
             });
 
             if (upcoming.length === 0) {
@@ -187,15 +187,30 @@
                 const dText = diffDays === 0 ? 'D-Day' : `D-${diffDays}`;
                 
                 return `
-                <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-3 rounded-lg shadow-sm flex justify-between items-center">
+                <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-4 rounded-lg shadow-sm flex justify-between items-center mb-2">
                     <div>
                         <span class="font-bold text-[#D87093] text-sm">🚨 [${e.category}] 납부 ${dText}</span>
-                        <p class="text-xs text-[#D87093] opacity-80 mt-0.5">${e.memo ? e.memo : '잊지 말고 납부하세요!'}</p>
+                        <p class="text-xs text-[#D87093] opacity-80 mt-1">${e.memo ? e.memo : '잊지 말고 납부하세요!'}</p>
                     </div>
-                    <strong class="text-[#D87093] text-lg">${e.amount.toLocaleString()}원</strong>
+                    <div class="flex flex-col items-end">
+                        <strong class="text-[#D87093] text-lg mb-1">${e.amount.toLocaleString()}원</strong>
+                        <!-- 납부 완료 버튼 -->
+                        <button onclick="togglePaid(${e.id})" class="bg-[#D87093] text-white text-xs px-3 py-1.5 rounded-full hover:bg-pink-600 shadow transition font-bold">납부 완료하기</button>
+                    </div>
                 </div>
                 `;
             }).join('');
+        }
+
+        // --- 납부 상태 토글 함수 (미납 <-> 납부완료) ---
+        function togglePaid(id) {
+            const exp = expenses.find(e => e.id === id);
+            if(exp) {
+                exp.isPaid = !exp.isPaid; // 상태 반전
+                localStorage.setItem('myExpenses', JSON.stringify(expenses));
+                renderRecentList();
+                renderDDayBanner(); // 화면 즉시 갱신
+            }
         }
 
         // --- 엑셀(CSV) 다운로드 함수 ---
@@ -204,18 +219,19 @@
 
             // 엑셀/한셀에서 한글이 깨지지 않도록 BOM(\uFEFF) 추가
             let csvContent = '\uFEFF'; 
-            csvContent += '결제 및 등록일,카테고리,금액,마감일,메모\n';
+            csvContent += '결제 및 등록일,카테고리,금액,마감일,납부여부,메모\n';
 
             // 시간순 정렬 (과거부터)
             const sortedExps = [...expenses].sort((a, b) => new Date(a.date) - new Date(b.date));
 
             sortedExps.forEach(e => {
-                const memo = e.memo ? e.memo.replace(/,/g, ' ') : ''; // 쉼표(,)가 있으면 CSV 셀이 밀리므로 띄어쓰기로 변경
+                const memo = e.memo ? e.memo.replace(/,/g, ' ') : ''; 
                 const dueDate = e.dueDate ? e.dueDate : '';
-                csvContent += `${e.date},${e.category},${e.amount},${dueDate},${memo}\n`;
+                const isPaidText = e.dueDate ? (e.isPaid ? '납부완료' : '미납') : '일반지출';
+                
+                csvContent += `${e.date},${e.category},${e.amount},${dueDate},${isPaidText},${memo}\n`;
             });
 
-            // 파일 생성 및 다운로드 트리거
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -223,7 +239,7 @@
             link.click();
         }
 
-        // 상세 지출 내역을 화면에 그려주는 함수
+        // --- 상세 지출 내역을 화면에 그려주는 함수 ---
         function renderRecentList() {
             const selectedMonth = document.getElementById('daily-month-picker').value;
             const listObj = document.getElementById('recent-list');
@@ -235,18 +251,34 @@
                 return;
             }
 
-            listObj.innerHTML = monthRecords.map(e => `
+            listObj.innerHTML = monthRecords.map(e => {
+                // 마감일이 있는 경우 상태 뱃지 생성
+                let statusBadge = '';
+                if(e.dueDate) {
+                    if(e.isPaid) {
+                        statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200 transition" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
+                    } else {
+                        statusBadge = `<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer hover:bg-red-200 transition" onclick="togglePaid(${e.id})">⏳ 미납 (마감:${e.dueDate.slice(5)})</span>`;
+                    }
+                }
+
+                return `
                 <li class="flex justify-between items-center bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA] mb-2">
-                    <div>
-                        <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
-                        <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
-                        ${e.dueDate ? `<span class="text-xs text-[#D87093] ml-1 font-bold">(마감: ${e.dueDate.slice(5)})</span>` : ''}
-                        ${e.memo ? `<p class="text-xs text-gray-400 mt-1">${e.memo}</p>` : ''}
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1">
+                            <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
+                            <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
+                            ${statusBadge}
+                        </div>
+                        ${e.memo ? `<p class="text-xs text-gray-400">${e.memo}</p>` : ''}
                     </div>
-                    <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
-                    <button onclick="deleteExpense(${e.id})" class="ml-3 text-red-300 text-xs hover:text-red-500">✕</button>
+                    <div class="flex items-center ml-2">
+                        <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
+                        <button onclick="deleteExpense(${e.id})" class="ml-3 text-red-300 text-xs hover:text-red-500 p-1">✕</button>
+                    </div>
                 </li>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function formatNumber(input) {
@@ -298,13 +330,15 @@
             const amountInputVal = document.getElementById('amount-input').value;
             const amount = Number(amountInputVal.replace(/,/g, ''));
             
-            const dueDate = document.getElementById('due-date-input').value; // 마감일 추가
+            const dueDate = document.getElementById('due-date-input').value;
             const memo = document.getElementById('memo-input').value;
+
+            // 마감일을 적었다면 미납(false), 마감일이 없다면 낸 돈(true)으로 자동 세팅
+            const isPaid = dueDate ? false : true; 
 
             if(!date || !amount) return alert('날짜와 금액을 정확히 입력해주세요.');
 
-            // 데이터에 dueDate 함께 저장
-            expenses.push({ id: Date.now(), date, category, amount, dueDate, memo });
+            expenses.push({ id: Date.now(), date, category, amount, dueDate, memo, isPaid });
             localStorage.setItem('myExpenses', JSON.stringify(expenses));
             
             document.getElementById('amount-input').value = '';
