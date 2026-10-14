@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
     <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
-    <title>💜 탐뽀뽀 스마트 가계뿌 💜</title>
+    <title>💜 탐뽀뽀 스마트 가계부 💜</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -26,12 +26,12 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-md flex flex-col">
         
-        <!-- 헤더 (누르면 메인 홈으로 이동) -->
+        <!-- 헤더 -->
         <header class="bg-[#B592FF] text-white p-4 text-center text-lg font-bold cursor-pointer hover:bg-[#9B72FF] transition" onclick="switchTab('home')">
-         💜 탐뽀뽀 가계뿌 💜 
+         💜 탐뽀뽀 스마트 가계부 💜 
         </header>
 
-        <!-- 3개 탭 메뉴 (홈 화면에서는 숨겨짐) -->
+        <!-- 3개 탭 메뉴 -->
         <div id="tab-menu" class="flex border-b text-sm hidden">
             <button id="tab-daily" class="flex-1 py-3 text-center tab-active tab-btn" onclick="switchTab('daily')">일간 기록</button>
             <button id="tab-monthly" class="flex-1 py-3 text-center text-gray-500 tab-btn" onclick="switchTab('monthly')">월간 요약</button>
@@ -41,19 +41,16 @@
         <!-- 🏠 메인 홈 화면 -->
         <div id="view-home" class="p-6 flex-1 flex flex-col items-center justify-center space-y-4 bg-white">
             
-            <!-- ========================================================================= -->
-            <!-- 📷 사진 추가 부분: 아래 src="..." 안의 주소를 원하는 사진 링크로 바꾸세요! -->
-            <!-- ========================================================================= -->
-            <div class="w-full max-w-[350px] mb-2">
-                <img src="https://i.pinimg.com/1200x/1b/a1/4c/1ba14c76d3b835067fddad1c9c907ae5.jpg" 
+            <div class="w-full max-w-[200px] mb-2">
+                <img src="https://via.placeholder.com/300x200/F4F0FF/7B68EE?text=사진을+넣어주세요" 
                      alt="메인 이미지" 
                      class="w-full h-auto rounded-2xl shadow-sm object-cover">
             </div>
-            <!-- ========================================================================= -->
 
-            <div class="text-center mb-4">
-                <h2 class="text-xl font-bold text-[#7B68EE] mb-1">오늘을 어떤 조각들로 채웠나요 💜✨</h2>
-                <p class="text-xs text-gray-500">원하시는 메뉴를 선택해 주세요.</p>
+            <!-- 고정 감성 글귀 -->
+            <div class="text-center mb-4 px-2">
+                <h2 class="text-lg font-bold text-[#7B68EE] mb-1 leading-snug">오늘을 어떤 조각들로 채웠나요 💜✨</h2>
+                <p class="text-xs text-gray-500 mt-1">원하시는 메뉴를 선택해주세요</p>
             </div>
             
             <div class="w-full space-y-3">
@@ -107,10 +104,13 @@
                 </form>
             </div>
             
-            <div class="flex justify-between items-center mb-3 border-b pb-2">
+            <div class="flex justify-between items-end mb-2 border-b pb-2">
                 <h3 class="font-bold text-gray-700">📝 상세 지출 내역</h3>
                 <input type="month" id="daily-month-picker" class="border border-[#E6E6FA] text-gray-600 rounded px-2 py-1 text-sm bg-[#F8F5FF]" oninput="renderRecentList()" onchange="renderRecentList()">
             </div>
+            <!-- 🔍 검색창 기능 추가 -->
+            <input type="text" id="search-input" class="w-full border border-[#E6E6FA] text-gray-600 rounded px-3 py-2 text-sm bg-white mb-4" placeholder="🔍 카테고리, 메모, 금액 검색" oninput="renderRecentList()">
+            
             <ul id="recent-list" class="space-y-2 text-sm"></ul>
 
             <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E6FA] text-[#7B68EE] border border-[#C3B1E1] font-bold py-3 rounded-lg hover:bg-[#D8B4FE] hover:text-white transition shadow-sm">
@@ -129,7 +129,7 @@
                 <p class="text-sm text-gray-500 mb-1">이번 달 총 지출액</p>
                 <p id="monthly-total" class="text-3xl font-bold text-[#7B68EE]">0원</p>
             </div>
-            <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">카테고리별 요약</h3>
+            <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">카테고리별 요약 <span class="text-xs font-normal text-gray-400 ml-1">(터치하여 상세 보기)</span></h3>
             <ul id="monthly-summary-list" class="space-y-3"></ul>
         </div>
 
@@ -147,11 +147,10 @@
     </div>
 
     <script>
-        // --- 초기 데이터 및 설정 ---
         let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
         let categories = JSON.parse(localStorage.getItem('myCategories')) || ['공과금', '관리비', '통신료', '보험료', '학원비', '식비'];
         
-        const chartColors = ['#E1CEF0', '#FFE0EB',  '#BDE0FE', '#e3f7e8', '#DAD9FF', '#FFD1B5', '#FFFFB4', '#EAEAEA'];
+        const chartColors = ['#CDB4DB', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#e3f7e8', '#A2D2FF', '#E6E6FA', '#C3B1E1', '#F4F0FF'];
         let annualChartInstance = null;
 
         window.onload = () => {
@@ -164,8 +163,6 @@
             document.getElementById('year-display').dataset.year = now.getFullYear();
             
             initData();
-            
-            // 첫 화면을 홈으로 설정
             switchTab('home');
         };
 
@@ -175,7 +172,6 @@
             renderDDayBanner();
         }
 
-        // --- 탭 전환 함수 ---
         function switchTab(tabId) {
             const tabs = ['home', 'daily', 'monthly', 'annual'];
             const tabMenu = document.getElementById('tab-menu');
@@ -209,7 +205,6 @@
             if (tabId === 'annual') renderAnnual();
         }
 
-        // --- 1. 일간 기록 (Daily) ---
         function renderCategorySelect() {
             const select = document.getElementById('category-select');
             select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -264,25 +259,64 @@
             }
         }
 
+        // --- 상세 내역 렌더링 (검색 + 미납 최우선 + 최신 날짜순 정렬) ---
         function renderRecentList() {
             const selectedMonth = document.getElementById('daily-month-picker').value;
+            const searchKeyword = document.getElementById('search-input').value.toLowerCase().trim();
             const listObj = document.getElementById('recent-list');
-            const monthRecords = expenses.filter(e => e.date.startsWith(selectedMonth)).reverse();
+            
+            // 1. 달력 월에 맞는 데이터 필터링
+            let monthRecords = expenses.filter(e => e.date.startsWith(selectedMonth));
+            
+            // 2. 검색어 필터링
+            if(searchKeyword) {
+                monthRecords = monthRecords.filter(e => 
+                    e.category.toLowerCase().includes(searchKeyword) ||
+                    (e.memo && e.memo.toLowerCase().includes(searchKeyword)) ||
+                    e.amount.toString().includes(searchKeyword)
+                );
+            }
+
+            // 3. 정렬 로직 (미납 > 최신 날짜)
+            monthRecords.sort((a, b) => {
+                const aUnpaid = (a.dueDate && !a.isPaid) ? 1 : 0;
+                const bUnpaid = (b.dueDate && !b.isPaid) ? 1 : 0;
+                
+                // 1순위: 미납 여부 (미납이 1이므로 내림차순 하면 위로 감)
+                if (aUnpaid !== bUnpaid) {
+                    return bUnpaid - aUnpaid; 
+                }
+                
+                // 2순위: 날짜 (최신 날짜가 위로)
+                if (a.date !== b.date) {
+                    return new Date(b.date) - new Date(a.date);
+                }
+
+                // 3순위: 등록순(ID) 최신이 위로
+                return b.id - a.id;
+            });
             
             if(monthRecords.length === 0) {
-                listObj.innerHTML = '<li class="text-gray-400 text-center py-4">선택한 달의 기록이 없습니다.</li>';
+                listObj.innerHTML = '<li class="text-gray-400 text-center py-4">해당하는 기록이 없습니다.</li>';
                 return;
             }
 
             listObj.innerHTML = monthRecords.map(e => {
                 let statusBadge = '';
+                // 미납 건은 눈에 띄도록 배경색을 다르게 줌
+                let bgStyle = 'bg-[#F8F5FF]'; 
+                
                 if(e.dueDate) {
-                    if(e.isPaid) statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
-                    else statusBadge = `<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer hover:bg-red-200" onclick="togglePaid(${e.id})">⏳ 미납 (마감:${e.dueDate.slice(5)})</span>`;
+                    if(e.isPaid) {
+                        statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
+                    } else {
+                        statusBadge = `<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer hover:bg-red-200 animate-pulse" onclick="togglePaid(${e.id})">⏳ 미납 (마감:${e.dueDate.slice(5)})</span>`;
+                        bgStyle = 'bg-[#FFF0F5] border-pink-200'; // 미납이면 옅은 핑크색 배경
+                    }
                 }
 
                 return `
-                <li class="flex justify-between items-center bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA] mb-2">
+                <li class="flex justify-between items-center ${bgStyle} p-3 rounded border border-[#E6E6FA] mb-2">
                     <div class="flex-1">
                         <div class="flex items-center mb-1">
                             <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
@@ -357,7 +391,6 @@
             input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // --- 2. 월간 요약 (Monthly) ---
         function changeMonth(delta) {
             const picker = document.getElementById('month-picker');
             const d = new Date(picker.value + '-01');
@@ -366,18 +399,29 @@
             renderMonthly();
         }
 
+        // --- 월간 요약 렌더링 (아코디언 펼쳐보기 기능 적용) ---
         function renderMonthly() {
             const targetMonth = document.getElementById('month-picker').value;
             const monthlyExps = expenses.filter(e => e.date.startsWith(targetMonth));
             
             let total = 0;
             const summary = {};
-            categories.forEach(cat => summary[cat] = 0);
+            const details = {}; // 항목별 상세 내역을 저장할 객체
+            
+            categories.forEach(cat => { 
+                summary[cat] = 0; 
+                details[cat] = []; 
+            });
             
             monthlyExps.forEach(e => {
                 total += e.amount;
-                if(summary[e.category] !== undefined) summary[e.category] += e.amount;
-                else summary[e.category] = e.amount;
+                if(summary[e.category] !== undefined) {
+                    summary[e.category] += e.amount;
+                    details[e.category].push(e);
+                } else {
+                    summary[e.category] = e.amount;
+                    details[e.category] = [e];
+                }
             });
 
             document.getElementById('monthly-total').innerText = total.toLocaleString() + '원';
@@ -385,22 +429,59 @@
             const listObj = document.getElementById('monthly-summary-list');
             listObj.innerHTML = Object.entries(summary)
                 .filter(([_, amt]) => amt > 0)
-                .sort((a, b) => b[1] - a[1])
+                .sort((a, b) => b[1] - a[1]) // 총액 큰 순서대로
                 .map(([cat, amt]) => {
                     const percent = total > 0 ? Math.round((amt/total)*100) : 0;
-                    return `
-                    <li class="bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA] flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-gray-700">${cat}</span>
-                            <span class="text-xs text-gray-400">${percent}% 차지</span>
+                    
+                    // 세부 내역 HTML 생성 (최신 날짜순 정렬)
+                    const detailHTML = details[cat].sort((a, b) => new Date(b.date) - new Date(a.date)).map(d => `
+                        <div class="flex justify-between items-center text-xs py-2 border-b border-gray-100 last:border-0">
+                            <span class="text-gray-500 flex-1 truncate mr-2">${d.date.slice(5)} ${d.memo ? `· ${d.memo}` : ''}</span>
+                            <span class="font-medium text-gray-700 whitespace-nowrap">${d.amount.toLocaleString()}원</span>
                         </div>
-                        <span class="text-lg">${amt.toLocaleString()}원</span>
+                    `).join('');
+
+                    // 아이디 값에 공백이 들어갈 수 있으므로 안전하게 변환
+                    const safeCatId = 'cat-' + cat.replace(/\s+/g, '-');
+
+                    return `
+                    <li class="bg-[#F8F5FF] rounded-lg border border-[#E6E6FA] overflow-hidden mb-3 shadow-sm">
+                        <!-- 터치 시 아코디언 토글 -->
+                        <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-[#E6E6FA] transition" onclick="toggleAccordion('${safeCatId}')">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-700 text-base">${cat}</span>
+                                <span class="text-xs text-gray-400 mt-0.5">${percent}% 차지</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-lg font-bold text-[#7B68EE] mr-2">${amt.toLocaleString()}원</span>
+                                <span id="icon-${safeCatId}" class="text-gray-400 text-xs transform transition-transform duration-200">▼</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 펼쳐지는 숨김 상세 내역 영역 -->
+                        <div id="detail-${safeCatId}" class="hidden bg-white px-4 py-2 border-t border-[#E6E6FA]">
+                            ${detailHTML}
+                        </div>
                     </li>`
                 }).join('');
+                
             if(listObj.innerHTML === '') listObj.innerHTML = '<li class="text-center text-gray-400 py-4">지출 내역이 없습니다.</li>';
         }
 
-        // --- 3. 연간 그래프 (Annual) ---
+        // 아코디언 열고 닫는 토글 함수
+        function toggleAccordion(catId) {
+            const detailDiv = document.getElementById(`detail-${catId}`);
+            const icon = document.getElementById(`icon-${catId}`);
+            
+            if (detailDiv.classList.contains('hidden')) {
+                detailDiv.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)'; // 화살표 뒤집기
+            } else {
+                detailDiv.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)'; // 원래대로
+            }
+        }
+
         function changeYear(delta) {
             const display = document.getElementById('year-display');
             let year = parseInt(display.dataset.year) + delta;
@@ -429,7 +510,7 @@
 
             annualChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'], datasets: activeDatasets },
+                data: { labels: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], datasets: activeDatasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
