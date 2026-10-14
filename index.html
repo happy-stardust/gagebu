@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
     <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
-    <title>💜 탐뽀뽀 스마트 가계부 💜</title>
+    <title>💜 탐뽀뽀 스마트 가계뿌 💜</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -19,7 +19,6 @@
         .tab-btn { transition: all 0.2s; }
         .tab-active { border-bottom: 3px solid #B592FF; color: #B592FF; font-weight: bold; }
         .hidden { display: none; }
-        .progress-bar { transition: width 0.5s ease-in-out; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #E6E6FA; border-radius: 10px; }
     </style>
@@ -32,15 +31,14 @@
          💜 탐뽀뽀 스마트 가계부 💜 
         </header>
 
-        <!-- 4개 탭 메뉴 (홈 화면에서는 숨겨짐) -->
-        <div id="tab-menu" class="flex border-b text-xs sm:text-sm hidden">
-            <button id="tab-dashboard" class="flex-1 py-3 text-center tab-active tab-btn" onclick="switchTab('dashboard')">대시보드</button>
-            <button id="tab-daily" class="flex-1 py-3 text-center text-gray-500 tab-btn" onclick="switchTab('daily')">일간 기록</button>
+        <!-- 3개 탭 메뉴 (홈 화면에서는 숨겨짐) -->
+        <div id="tab-menu" class="flex border-b text-sm hidden">
+            <button id="tab-daily" class="flex-1 py-3 text-center tab-active tab-btn" onclick="switchTab('daily')">일간 기록</button>
             <button id="tab-monthly" class="flex-1 py-3 text-center text-gray-500 tab-btn" onclick="switchTab('monthly')">월간 요약</button>
             <button id="tab-annual" class="flex-1 py-3 text-center text-gray-500 tab-btn" onclick="switchTab('annual')">연간 그래프</button>
         </div>
 
-        <!-- 🏠 메인 홈 화면 (새로 추가됨) -->
+        <!-- 🏠 메인 홈 화면 -->
         <div id="view-home" class="p-6 flex-1 flex flex-col items-center justify-center space-y-4 bg-white">
             
             <!-- ========================================================================= -->
@@ -59,9 +57,6 @@
             </div>
             
             <div class="w-full space-y-3">
-                <button onclick="switchTab('dashboard')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
-                    <span class="text-xl mr-3">📊</span> 자산 및 예산 대시보드
-                </button>
                 <button onclick="switchTab('daily')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
                     <span class="text-xl mr-3">📝</span> 일간 기록 (지출 작성)
                 </button>
@@ -78,22 +73,6 @@
             </p>
         </div>
 
-        <!-- 0. 대시보드 (Dashboard) -->
-        <div id="view-dashboard" class="p-5 hidden flex-1 overflow-y-auto">
-            <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">🏦 나의 자산 현황</h3>
-            <div id="account-list" class="space-y-3 mb-6">
-                <!-- 통장/카드 리스트 동적 렌더링 -->
-            </div>
-
-            <div class="flex justify-between items-center mb-3 border-b pb-2">
-                <h3 class="font-bold text-gray-700">📊 이번 달 예산 현황</h3>
-                <span class="text-xs text-gray-400">※ 항목 터치 시 예산 수정</span>
-            </div>
-            <div id="budget-list" class="space-y-4 mb-4">
-                <!-- 예산 프로그레스 바 동적 렌더링 -->
-            </div>
-        </div>
-
         <!-- 1. 일간 기록 (Daily) -->
         <div id="view-daily" class="p-5 hidden flex-1 overflow-y-auto">
             <!-- D-Day 알림 배너 -->
@@ -101,17 +80,9 @@
 
             <div class="bg-[#F8F5FF] p-4 rounded-lg mb-6 shadow-sm border border-[#E6E6FA]">
                 <form id="expense-form" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">📅 날짜</label>
-                            <input type="date" id="date-input" class="w-full border rounded-lg p-2 bg-white text-sm" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">💳 결제 수단</label>
-                            <select id="pay-account-select" class="w-full border rounded-lg p-2 bg-white text-sm">
-                                <!-- 계좌 목록 렌더링 -->
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">📅 날짜</label>
+                        <input type="date" id="date-input" class="w-full border rounded-lg p-2 bg-white text-sm" required>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">🗂️ 카테고리</label>
@@ -124,6 +95,7 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">⏰ 납부 마감일 (선택)</label>
                         <input type="date" id="due-date-input" class="w-full border border-pink-200 rounded-lg p-2 bg-white text-gray-600 text-sm">
+                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 마감일을 적으면 상단에 알림 배너가 뜹니다.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📝 메모 (선택)</label>
@@ -179,14 +151,6 @@
         let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
         let categories = JSON.parse(localStorage.getItem('myCategories')) || ['공과금', '관리비', '통신료', '보험료', '학원비', '식비'];
         
-        let accounts = JSON.parse(localStorage.getItem('myAccounts')) || [
-            { id: 'acc1', name: '생활비 통장', type: 'bank', balance: 1500000 },
-            { id: 'acc2', name: '신용카드', type: 'credit' }
-        ];
-
-        let budgets = JSON.parse(localStorage.getItem('myBudgets')) || {};
-        categories.forEach(cat => { if(!budgets[cat]) budgets[cat] = 300000; });
-
         const chartColors = ['#CDB4DB', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#e3f7e8', '#A2D2FF', '#E6E6FA', '#C3B1E1', '#F4F0FF'];
         let annualChartInstance = null;
 
@@ -206,19 +170,16 @@
         };
 
         function initData() {
-            renderDashboard();
             renderCategorySelect();
-            renderAccountSelect();
             renderRecentList();
             renderDDayBanner();
         }
 
-        // --- 탭 전환 함수 (오류 방지 보강) ---
+        // --- 탭 전환 함수 ---
         function switchTab(tabId) {
-            const tabs = ['home', 'dashboard', 'daily', 'monthly', 'annual'];
+            const tabs = ['home', 'daily', 'monthly', 'annual'];
             const tabMenu = document.getElementById('tab-menu');
 
-            // 1. 모든 뷰와 탭 버튼을 비활성화
             tabs.forEach(id => {
                 const viewObj = document.getElementById(`view-${id}`);
                 const btnObj = document.getElementById(`tab-${id}`);
@@ -230,11 +191,9 @@
                 }
             });
 
-            // 2. 선택한 뷰만 활성화
             const activeView = document.getElementById(`view-${tabId}`);
             if(activeView) activeView.classList.remove('hidden');
             
-            // 3. 홈 화면일 때와 아닐 때 탭 메뉴 처리
             if(tabId === 'home') {
                 if(tabMenu) tabMenu.classList.add('hidden');
             } else {
@@ -246,120 +205,8 @@
                 }
             }
 
-            // 4. 화면에 맞는 데이터 렌더링
-            if (tabId === 'dashboard') renderDashboard();
             if (tabId === 'monthly') renderMonthly();
             if (tabId === 'annual') renderAnnual();
-        }
-
-        // --- 0. 대시보드 (자산 & 예산) ---
-        function renderDashboard() {
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const monthExps = expenses.filter(e => e.date.startsWith(currentMonth));
-            
-            // 1. 자산 현황 (계좌 및 카드)
-            const accListObj = document.getElementById('account-list');
-            accListObj.innerHTML = accounts.map(acc => {
-                if(acc.type === 'bank') {
-                    // 통장
-                    return `
-                    <div class="bg-[#F8F5FF] border border-[#E6E6FA] p-4 rounded-lg flex justify-between items-center shadow-sm">
-                        <div class="flex items-center">
-                            <span class="text-xl mr-2">💰</span>
-                            <span class="font-bold text-gray-700 cursor-pointer hover:text-[#7B68EE]" onclick="renameAccount('${acc.id}')">${acc.name} <span class="text-xs">✏️</span></span>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <span class="text-lg font-bold text-[#7B68EE]">${acc.balance.toLocaleString()}원</span>
-                            <button onclick="editBalance('${acc.id}')" class="text-xs text-gray-400 underline mt-1 hover:text-[#7B68EE]">잔고 수정</button>
-                        </div>
-                    </div>`;
-                } else {
-                    // 신용카드
-                    const cardUsage = monthExps.filter(e => e.accountId === acc.id).reduce((sum, e) => sum + e.amount, 0);
-                    return `
-                    <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-4 rounded-lg flex justify-between items-center shadow-sm">
-                        <div class="flex items-center">
-                            <span class="text-xl mr-2">💳</span>
-                            <div>
-                                <span class="font-bold text-gray-700 block cursor-pointer hover:text-[#D87093]" onclick="renameAccount('${acc.id}')">${acc.name} <span class="text-xs">✏️</span></span>
-                                <span class="text-xs text-[#D87093]">이번 달 누적 / 청구 예정액</span>
-                            </div>
-                        </div>
-                        <span class="text-lg font-bold text-[#D87093]">${cardUsage.toLocaleString()}원</span>
-                    </div>`;
-                }
-            }).join('');
-            
-            accListObj.innerHTML += `<button onclick="addAccount()" class="w-full border-2 border-dashed border-[#C3B1E1] text-[#7B68EE] py-2 rounded-lg text-sm font-bold hover:bg-[#F4F0FF]">+ 계좌/카드 추가하기</button>`;
-
-            // 2. 예산 현황
-            const budgetListObj = document.getElementById('budget-list');
-            budgetListObj.innerHTML = categories.map(cat => {
-                const budget = budgets[cat] || 0;
-                const spent = monthExps.filter(e => e.category === cat).reduce((sum, e) => sum + e.amount, 0);
-                const percent = budget > 0 ? Math.min(Math.round((spent / budget) * 100), 100) : 0;
-                
-                let barColor = 'bg-[#B592FF]';
-                if(percent >= 100) barColor = 'bg-red-500';
-                else if(percent >= 80) barColor = 'bg-yellow-400';
-
-                return `
-                <div class="mb-3" onclick="editBudget('${cat}')" style="cursor:pointer;">
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-bold text-gray-700">${cat}</span>
-                        <span class="text-gray-500">${spent.toLocaleString()}원 / <span class="text-xs">${budget.toLocaleString()}원</span></span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="${barColor} h-2.5 rounded-full progress-bar" style="width: ${percent}%"></div>
-                    </div>
-                    ${percent >= 100 ? `<p class="text-xs text-red-500 mt-1 text-right">예산 초과!</p>` : ''}
-                </div>`;
-            }).join('');
-        }
-
-        function renameAccount(accId) {
-            const acc = accounts.find(a => a.id === accId);
-            const newName = prompt('계좌/카드 이름을 변경하세요:', acc.name);
-            if(newName && newName.trim() !== '') {
-                acc.name = newName.trim();
-                localStorage.setItem('myAccounts', JSON.stringify(accounts));
-                initData(); 
-            }
-        }
-
-        function editBalance(accId) {
-            const acc = accounts.find(a => a.id === accId);
-            const newBal = prompt(`'${acc.name}'의 실제 통장 잔고를 입력해주세요:`, acc.balance);
-            if(newBal !== null && !isNaN(newBal.replace(/,/g, ''))) {
-                acc.balance = Number(newBal.replace(/,/g, ''));
-                localStorage.setItem('myAccounts', JSON.stringify(accounts));
-                renderDashboard();
-            }
-        }
-
-        function addAccount() {
-            const name = prompt('추가할 통장이나 카드 이름을 입력하세요 (예: 카카오뱅크, 국민카드):');
-            if(!name) return;
-            const type = confirm(`'${name}'이(가) 통장(체크/현금)이면 [확인], 신용카드면 [취소]를 눌러주세요.`);
-            
-            const newAcc = { id: 'acc' + Date.now(), name, type: type ? 'bank' : 'credit' };
-            if(type) {
-                const bal = prompt('현재 통장 잔액을 입력해주세요 (숫자만):', 0);
-                newAcc.balance = Number(bal) || 0;
-            }
-            accounts.push(newAcc);
-            localStorage.setItem('myAccounts', JSON.stringify(accounts));
-            initData();
-        }
-
-        function editBudget(cat) {
-            const current = budgets[cat] || 0;
-            const newBudget = prompt(`'${cat}'의 한 달 예산을 설정해주세요:`, current);
-            if(newBudget !== null && !isNaN(newBudget.replace(/,/g, ''))) {
-                budgets[cat] = Number(newBudget.replace(/,/g, ''));
-                localStorage.setItem('myBudgets', JSON.stringify(budgets));
-                renderDashboard();
-            }
         }
 
         // --- 1. 일간 기록 (Daily) ---
@@ -369,11 +216,6 @@
             select.innerHTML += `<option value="ADD_NEW" class="font-bold text-[#B592FF]">+ 새 항목 직접 추가...</option>`;
         }
 
-        function renderAccountSelect() {
-            const select = document.getElementById('pay-account-select');
-            select.innerHTML = accounts.map(acc => `<option value="${acc.id}">${acc.name} ${acc.type==='credit'?'(신용)':'(체크/현금)'}</option>`).join('');
-        }
-
         function handleCategoryChange() {
             const select = document.getElementById('category-select');
             if (select.value === 'ADD_NEW') {
@@ -381,13 +223,10 @@
                 if (newCat && newCat.trim() !== '') {
                     if(!categories.includes(newCat.trim())) {
                         categories.push(newCat.trim());
-                        budgets[newCat.trim()] = 300000;
                         localStorage.setItem('myCategories', JSON.stringify(categories));
-                        localStorage.setItem('myBudgets', JSON.stringify(budgets));
                     }
                     renderCategorySelect();
                     select.value = newCat.trim();
-                    renderDashboard(); 
                 } else {
                     select.value = categories[0];
                 }
@@ -396,7 +235,6 @@
 
         function saveExpense() {
             const date = document.getElementById('date-input').value;
-            const accountId = document.getElementById('pay-account-select').value;
             const category = document.getElementById('category-select').value;
             const amountInputVal = document.getElementById('amount-input').value;
             const amount = Number(amountInputVal.replace(/,/g, ''));
@@ -406,14 +244,7 @@
 
             if(!date || !amount) return alert('날짜와 금액을 정확히 입력해주세요.');
 
-            const account = accounts.find(a => a.id === accountId);
-            
-            if(account && account.type === 'bank') {
-                account.balance -= amount;
-                localStorage.setItem('myAccounts', JSON.stringify(accounts));
-            }
-
-            expenses.push({ id: Date.now(), date, accountId, category, amount, dueDate, memo, isPaid });
+            expenses.push({ id: Date.now(), date, category, amount, dueDate, memo, isPaid });
             localStorage.setItem('myExpenses', JSON.stringify(expenses));
             
             document.getElementById('amount-input').value = '';
@@ -427,15 +258,6 @@
 
         function deleteExpense(id) {
             if(confirm('이 기록을 삭제하시겠습니까?')) {
-                const exp = expenses.find(e => e.id === id);
-                if(exp) {
-                    const acc = accounts.find(a => a.id === exp.accountId);
-                    if(acc && acc.type === 'bank') {
-                        acc.balance += exp.amount;
-                        localStorage.setItem('myAccounts', JSON.stringify(accounts));
-                    }
-                }
-                
                 expenses = expenses.filter(e => e.id !== id);
                 localStorage.setItem('myExpenses', JSON.stringify(expenses));
                 initData();
@@ -453,9 +275,6 @@
             }
 
             listObj.innerHTML = monthRecords.map(e => {
-                const acc = accounts.find(a => a.id === e.accountId);
-                const accName = acc ? acc.name : '알수없음';
-                
                 let statusBadge = '';
                 if(e.dueDate) {
                     if(e.isPaid) statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
@@ -470,8 +289,7 @@
                             <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
                             ${statusBadge}
                         </div>
-                        <p class="text-xs font-bold text-gray-400 mb-0.5">💳 ${accName}</p>
-                        ${e.memo ? `<p class="text-xs text-gray-500">${e.memo}</p>` : ''}
+                        ${e.memo ? `<p class="text-xs text-gray-500 mt-1">${e.memo}</p>` : ''}
                     </div>
                     <div class="flex items-center ml-2">
                         <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
@@ -534,12 +352,12 @@
             }
         }
 
-        // --- 기타 공통 기능 ---
         function formatNumber(input) {
             let value = input.value.replace(/[^0-9]/g, '');
             input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
+        // --- 2. 월간 요약 (Monthly) ---
         function changeMonth(delta) {
             const picker = document.getElementById('month-picker');
             const d = new Date(picker.value + '-01');
@@ -582,6 +400,7 @@
             if(listObj.innerHTML === '') listObj.innerHTML = '<li class="text-center text-gray-400 py-4">지출 내역이 없습니다.</li>';
         }
 
+        // --- 3. 연간 그래프 (Annual) ---
         function changeYear(delta) {
             const display = document.getElementById('year-display');
             let year = parseInt(display.dataset.year) + delta;
@@ -624,15 +443,13 @@
 
         function exportToCSV() {
             if (expenses.length === 0) return alert('내보낼 데이터가 없습니다.');
-            let csvContent = '\uFEFF결제 및 등록일,결제수단,카테고리,금액,마감일,납부여부,메모\n';
+            let csvContent = '\uFEFF결제 및 등록일,카테고리,금액,마감일,납부여부,메모\n';
             const sortedExps = [...expenses].sort((a, b) => new Date(a.date) - new Date(b.date));
             sortedExps.forEach(e => {
-                const acc = accounts.find(a => a.id === e.accountId);
-                const accName = acc ? acc.name : '';
                 const memo = e.memo ? e.memo.replace(/,/g, ' ') : ''; 
                 const dueDate = e.dueDate ? e.dueDate : '';
                 const isPaidText = e.dueDate ? (e.isPaid ? '납부완료' : '미납') : '일반지출';
-                csvContent += `${e.date},${accName},${e.category},${e.amount},${dueDate},${isPaidText},${memo}\n`;
+                csvContent += `${e.date},${e.category},${e.amount},${dueDate},${isPaidText},${memo}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
