@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta property="og:image" content="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
-  <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
-    <title>💜   탐뽀뽀 스마트 가계부 💜 </title>
+    <meta property="og:image" content="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
+    <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
+    <title>💜Expense Tracker💜</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -32,7 +32,7 @@
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-md flex flex-col">
         <!-- 헤더 타이틀 (라벤더 배경) -->
         <header class="bg-[#B592FF] text-white p-4 text-center text-lg font-bold">
-         💜   탐뽀뽀 스마트 가계부 💜 
+         💜 탐뽀뽀 스마트 가계부 💜 
         </header>
 
         <!-- 탭 메뉴 -->
@@ -61,7 +61,6 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">💵 지출 금액</label>
-                        <!-- type="text"로 변경 및 콤마 함수(oninput) 추가 -->
                         <input type="text" inputmode="numeric" id="amount-input" class="w-full border rounded-lg p-2 bg-white" placeholder="예: 50,000" required oninput="formatNumber(this)">
                     </div>
                     <div>
@@ -75,7 +74,11 @@
                 </form>
             </div>
             
-            <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">최근 기록된 항목 (이번 달)</h3>
+            <div class="flex justify-between items-center mb-3 border-b pb-2">
+                <h3 class="font-bold text-gray-700">📝 상세 지출 내역</h3>
+                <!-- oninput을 추가하여 모바일 환경에서 휠을 돌릴 때 즉시 반응하도록 수정 -->
+                <input type="month" id="daily-month-picker" class="border border-[#E6E6FA] text-gray-600 rounded px-2 py-1 text-sm bg-[#F8F5FF]" oninput="renderRecentList()" onchange="renderRecentList()">
+            </div>
             <ul id="recent-list" class="space-y-2 text-sm"></ul>
         </div>
 
@@ -87,7 +90,7 @@
                 <button onclick="changeMonth(1)" class="p-2 bg-gray-100 rounded hover:bg-gray-200">▶</button>
             </div>
 
-            <!-- 월간 총액 상자 (시커먼 색 -> 연한 보라색 배경 + 짙은 회색 글씨로 수정) -->
+            <!-- 월간 총액 상자 -->
             <div class="bg-[#F4F0FF] border border-[#E6E6FA] text-gray-800 p-5 rounded-lg mb-6 shadow-md text-center">
                 <p class="text-sm text-gray-500 mb-1">이번 달 총 지출액</p>
                 <p id="monthly-total" class="text-3xl font-bold text-[#7B68EE]">0원</p>
@@ -118,17 +121,50 @@
         let categories = JSON.parse(localStorage.getItem('myCategories')) || ['공과금', '관리비', '통신료', '보험료', '학원비', '매달 나가는 돈'];
         
         let annualChartInstance = null;
-        // 막대그래프 색상 (차분한 파스텔 & 라벤더 톤으로 변경)
+        // 막대그래프 색상 (차분한 파스텔 & 라벤더 톤)
         const chartColors = ['#CDB4DB', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#e3f7e8',  '#A2D2FF', '#E6E6FA', '#C3B1E1', '#F4F0FF'];
 
         window.onload = () => {
-            document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
-            document.getElementById('month-picker').value = new Date().toISOString().slice(0, 7);
-            document.getElementById('year-display').dataset.year = new Date().getFullYear();
+            const now = new Date();
+            const yearMonth = now.toISOString().slice(0, 7);
+            
+            document.getElementById('date-input').value = now.toISOString().split('T')[0];
+            document.getElementById('month-picker').value = yearMonth;
+            document.getElementById('year-display').dataset.year = now.getFullYear();
+            
+            // 일간 기록 탭의 달력 초기화
+            document.getElementById('daily-month-picker').value = yearMonth;
             
             renderCategorySelect();
             renderRecentList();
         };
+
+        // 상세 지출 내역을 화면에 그려주는 함수
+        function renderRecentList() {
+            // 달력에서 선택한 월 가져오기
+            const selectedMonth = document.getElementById('daily-month-picker').value;
+            const listObj = document.getElementById('recent-list');
+            
+            // 선택한 월의 모든 기록 가져오기 (최신순)
+            const monthRecords = expenses.filter(e => e.date.startsWith(selectedMonth)).reverse();
+            
+            if(monthRecords.length === 0) {
+                listObj.innerHTML = '<li class="text-gray-400 text-center py-4">선택한 달의 기록이 없습니다.</li>';
+                return;
+            }
+
+            listObj.innerHTML = monthRecords.map(e => `
+                <li class="flex justify-between items-center bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA] mb-2">
+                    <div>
+                        <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
+                        <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
+                        ${e.memo ? `<p class="text-xs text-gray-400 mt-1">${e.memo}</p>` : ''}
+                    </div>
+                    <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
+                    <button onclick="deleteExpense(${e.id})" class="ml-3 text-red-300 text-xs hover:text-red-500">✕</button>
+                </li>
+            `).join('');
+        }
 
         // 금액 입력 시 천 단위 콤마 찍어주는 함수
         function formatNumber(input) {
@@ -193,31 +229,11 @@
             document.getElementById('amount-input').value = '';
             document.getElementById('memo-input').value = '';
             
+            // 기록된 항목이 속한 달로 상세 내역 달력을 자동 동기화
+            document.getElementById('daily-month-picker').value = date.slice(0, 7);
+            
             alert('기록되었습니다!');
             renderRecentList();
-        }
-
-        function renderRecentList() {
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const listObj = document.getElementById('recent-list');
-            const recent = expenses.filter(e => e.date.startsWith(currentMonth)).reverse().slice(0, 5); 
-            
-            if(recent.length === 0) {
-                listObj.innerHTML = '<li class="text-gray-400">이번 달 기록이 없습니다.</li>';
-                return;
-            }
-
-            listObj.innerHTML = recent.map(e => `
-                <li class="flex justify-between items-center bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA]">
-                    <div>
-                        <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
-                        <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
-                        ${e.memo ? `<p class="text-xs text-gray-400 mt-1">${e.memo}</p>` : ''}
-                    </div>
-                    <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
-                    <button onclick="deleteExpense(${e.id})" class="ml-3 text-red-300 text-xs hover:text-red-500">✕</button>
-                </li>
-            `).join('');
         }
 
         function deleteExpense(id) {
@@ -317,11 +333,14 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
+                 scales: {
                         x: { stacked: true },
                         y: { 
                             stacked: true,
+                            beginAtZero: true,
+                            suggestedMax: 100000, 
                             ticks: {
+                                stepSize: 10000, 
                                 callback: function(value) {
                                     return (value / 10000) + '만';
                                 }
