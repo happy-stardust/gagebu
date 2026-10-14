@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
     <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/fe/a4/d5/fea4d57e2883131671570d51bd3a23cd.jpg">
-    <title>💜Expense Tracker💜</title>
+    <title>💜 탐뽀뽀 스마트 가계부 💜</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -44,11 +44,15 @@
 
         <!-- 1. 일간 기록 (Daily) -->
         <div id="view-daily" class="p-5 flex-1 overflow-y-auto">
+            
+            <!-- D-Day 알림 배너가 표시될 공간 -->
+            <div id="dday-container" class="mb-4 space-y-2"></div>
+
             <!-- 입력 폼 배경 (연한 파스텔톤 보라색) -->
             <div class="bg-[#F8F5FF] p-4 rounded-lg mb-6 shadow-sm border border-[#E6E6FA]">
                 <form id="expense-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">📅 결제 날짜</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">📅 결제/등록 날짜</label>
                         <input type="date" id="date-input" class="w-full border rounded-lg p-2 bg-white" required>
                     </div>
                     <div>
@@ -64,11 +68,16 @@
                         <input type="text" inputmode="numeric" id="amount-input" class="w-full border rounded-lg p-2 bg-white" placeholder="예: 50,000" required oninput="formatNumber(this)">
                     </div>
                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">⏰ 납부 마감일 (선택)</label>
+                        <input type="date" id="due-date-input" class="w-full border border-pink-200 rounded-lg p-2 bg-white text-gray-600">
+                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 고지서 등 미리 등록 시 상단에 D-Day가 뜹니다.</p>
+                    </div>
+                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📝 메모 (선택)</label>
                         <input type="text" id="memo-input" class="w-full border rounded-lg p-2 bg-white" placeholder="예: 1월 도시가스, 냥이즈 간식 등">
                     </div>
                     <!-- 저장 버튼 (라벤더 색상) -->
-                    <button type="button" onclick="saveExpense()" class="w-full bg-[#B592FF] text-white font-bold py-3 rounded-lg hover:bg-[#9B72FF] transition">
+                    <button type="button" onclick="saveExpense()" class="w-full bg-[#B592FF] text-white font-bold py-3 rounded-lg hover:bg-[#9B72FF] transition shadow-md">
                         기록 추가하기
                     </button>
                 </form>
@@ -80,6 +89,11 @@
                 <input type="month" id="daily-month-picker" class="border border-[#E6E6FA] text-gray-600 rounded px-2 py-1 text-sm bg-[#F8F5FF]" oninput="renderRecentList()" onchange="renderRecentList()">
             </div>
             <ul id="recent-list" class="space-y-2 text-sm"></ul>
+
+            <!-- 엑셀 내보내기 버튼 -->
+            <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E6FA] text-[#7B68EE] border border-[#C3B1E1] font-bold py-3 rounded-lg hover:bg-[#D8B4FE] hover:text-white transition">
+                📥 한셀/엑셀로 전체 데이터 다운로드
+            </button>
         </div>
 
         <!-- 2. 월간 요약 (Monthly) -->
@@ -137,15 +151,83 @@
             
             renderCategorySelect();
             renderRecentList();
+            renderDDayBanner(); // D-Day 배너 렌더링
         };
+
+        // --- 마감일(D-Day) 배너 생성 함수 ---
+        function renderDDayBanner() {
+            const container = document.getElementById('dday-container');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // 마감일이 존재하고, 오늘을 기준으로 14일 이내인 항목만 필터링
+            const upcoming = expenses.filter(e => {
+                if (!e.dueDate) return false;
+                const dDate = new Date(e.dueDate);
+                dDate.setHours(0, 0, 0, 0);
+                const diffTime = dDate - today;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays >= 0 && diffDays <= 14; // 마감일이 지났으면(-값) 배너에서 사라짐
+            });
+
+            if (upcoming.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            // 날짜 임박한 순서대로 정렬
+            upcoming.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+            container.innerHTML = upcoming.map(e => {
+                const dDate = new Date(e.dueDate);
+                dDate.setHours(0, 0, 0, 0);
+                const diffTime = dDate - today;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                
+                const dText = diffDays === 0 ? 'D-Day' : `D-${diffDays}`;
+                
+                return `
+                <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-3 rounded-lg shadow-sm flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-[#D87093] text-sm">🚨 [${e.category}] 납부 ${dText}</span>
+                        <p class="text-xs text-[#D87093] opacity-80 mt-0.5">${e.memo ? e.memo : '잊지 말고 납부하세요!'}</p>
+                    </div>
+                    <strong class="text-[#D87093] text-lg">${e.amount.toLocaleString()}원</strong>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- 엑셀(CSV) 다운로드 함수 ---
+        function exportToCSV() {
+            if (expenses.length === 0) return alert('내보낼 데이터가 없습니다.');
+
+            // 엑셀/한셀에서 한글이 깨지지 않도록 BOM(\uFEFF) 추가
+            let csvContent = '\uFEFF'; 
+            csvContent += '결제 및 등록일,카테고리,금액,마감일,메모\n';
+
+            // 시간순 정렬 (과거부터)
+            const sortedExps = [...expenses].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            sortedExps.forEach(e => {
+                const memo = e.memo ? e.memo.replace(/,/g, ' ') : ''; // 쉼표(,)가 있으면 CSV 셀이 밀리므로 띄어쓰기로 변경
+                const dueDate = e.dueDate ? e.dueDate : '';
+                csvContent += `${e.date},${e.category},${e.amount},${dueDate},${memo}\n`;
+            });
+
+            // 파일 생성 및 다운로드 트리거
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = '탐뽀뽀_스마트_가계부.csv';
+            link.click();
+        }
 
         // 상세 지출 내역을 화면에 그려주는 함수
         function renderRecentList() {
-            // 달력에서 선택한 월 가져오기
             const selectedMonth = document.getElementById('daily-month-picker').value;
             const listObj = document.getElementById('recent-list');
             
-            // 선택한 월의 모든 기록 가져오기 (최신순)
             const monthRecords = expenses.filter(e => e.date.startsWith(selectedMonth)).reverse();
             
             if(monthRecords.length === 0) {
@@ -158,6 +240,7 @@
                     <div>
                         <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
                         <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
+                        ${e.dueDate ? `<span class="text-xs text-[#D87093] ml-1 font-bold">(마감: ${e.dueDate.slice(5)})</span>` : ''}
                         ${e.memo ? `<p class="text-xs text-gray-400 mt-1">${e.memo}</p>` : ''}
                     </div>
                     <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
@@ -166,13 +249,11 @@
             `).join('');
         }
 
-        // 금액 입력 시 천 단위 콤마 찍어주는 함수
         function formatNumber(input) {
             let value = input.value.replace(/[^0-9]/g, '');
             input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // --- 공통 기능 ---
         function switchTab(tabId) {
             ['daily', 'monthly', 'annual'].forEach(id => {
                 document.getElementById(`view-${id}`).classList.add('hidden');
@@ -187,7 +268,6 @@
             if (tabId === 'annual') renderAnnual();
         }
 
-        // --- 1. Daily 기능 ---
         function renderCategorySelect() {
             const select = document.getElementById('category-select');
             select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -215,25 +295,27 @@
             const date = document.getElementById('date-input').value;
             const category = document.getElementById('category-select').value;
             
-            // 콤마 제거 후 숫자로 변환
             const amountInputVal = document.getElementById('amount-input').value;
             const amount = Number(amountInputVal.replace(/,/g, ''));
             
+            const dueDate = document.getElementById('due-date-input').value; // 마감일 추가
             const memo = document.getElementById('memo-input').value;
 
             if(!date || !amount) return alert('날짜와 금액을 정확히 입력해주세요.');
 
-            expenses.push({ id: Date.now(), date, category, amount, memo });
+            // 데이터에 dueDate 함께 저장
+            expenses.push({ id: Date.now(), date, category, amount, dueDate, memo });
             localStorage.setItem('myExpenses', JSON.stringify(expenses));
             
             document.getElementById('amount-input').value = '';
             document.getElementById('memo-input').value = '';
+            document.getElementById('due-date-input').value = '';
             
-            // 기록된 항목이 속한 달로 상세 내역 달력을 자동 동기화
             document.getElementById('daily-month-picker').value = date.slice(0, 7);
             
             alert('기록되었습니다!');
             renderRecentList();
+            renderDDayBanner(); // 저장 후 배너 새로고침
         }
 
         function deleteExpense(id) {
@@ -241,10 +323,10 @@
                 expenses = expenses.filter(e => e.id !== id);
                 localStorage.setItem('myExpenses', JSON.stringify(expenses));
                 renderRecentList();
+                renderDDayBanner(); // 삭제 후 배너 새로고침
             }
         }
 
-        // --- 2. Monthly 기능 ---
         function changeMonth(delta) {
             const picker = document.getElementById('month-picker');
             const d = new Date(picker.value + '-01');
@@ -292,7 +374,6 @@
             if(listObj.innerHTML === '') listObj.innerHTML = '<li class="text-center text-gray-400 py-4">지출 내역이 없습니다.</li>';
         }
 
-        // --- 3. Annual 기능 ---
         function changeYear(delta) {
             const display = document.getElementById('year-display');
             let year = parseInt(display.dataset.year) + delta;
