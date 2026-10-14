@@ -44,7 +44,7 @@
             <!-- ========================================================================= -->
             <!-- 📷 사진 추가 부분: 아래 src="..." 안의 주소를 원하는 사진 링크로 바꾸세요! -->
             <!-- ========================================================================= -->
-            <div class="w-full max-w-[400px] mb-2">
+            <div class="w-full max-w-[350px] mb-2">
                 <img src="https://i.pinimg.com/1200x/1b/a1/4c/1ba14c76d3b835067fddad1c9c907ae5.jpg" 
                      alt="메인 이미지" 
                      class="w-full h-auto rounded-2xl shadow-sm object-cover">
@@ -151,7 +151,7 @@
         let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
         let categories = JSON.parse(localStorage.getItem('myCategories')) || ['공과금', '관리비', '통신료', '보험료', '학원비', '식비'];
         
-        const chartColors = ['#CDB4DB', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#e3f7e8', '#A2D2FF', '#E6E6FA', '#C3B1E1', '#F4F0FF'];
+        const chartColors = ['#E1CEF0', '#FFE0EB',  '#BDE0FE', '#e3f7e8', '#DAD9FF', '#FFD1B5', '#FFFFB4', '#EAEAEA'];
         let annualChartInstance = null;
 
         window.onload = () => {
@@ -429,7 +429,7 @@
 
             annualChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], datasets: activeDatasets },
+                data: { labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'], datasets: activeDatasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
