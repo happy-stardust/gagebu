@@ -150,7 +150,7 @@
         let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
         let categories = JSON.parse(localStorage.getItem('myCategories')) || ['공과금', '관리비', '통신료', '보험료', '학원비', '식비'];
         
-        const chartColors = ['#E1CEF0', '#FFE0EB',  '#BDE0FE',  '#DAD9FF', '#e3f7e8', '#FFD1B5', '#FFFFB4', '#EAEAEA'];
+        const chartColors = ['#E1CEF0', '#FFE0EB',  '#BDE0FE',  '#DAD9FF',  '#FFD1B5', '#FFFFB4', '#e3f7e8', '#EAEAEA'];
         let annualChartInstance = null;
 
         window.onload = () => {
@@ -401,8 +401,8 @@
 
         // --- 월간 요약 렌더링 (아코디언 펼쳐보기 기능 적용) ---
         function renderMonthly() {
-            const targetMonth = document.getElementById('month-picker').value;
-            const monthlyExps = expenses.filter(e => e.date.startsWith(targetMonth));
+             targetMonth = document.getElementById('month-picker').value;
+             monthlyExps = expenses.filter(e => e.date.startsWith(targetMonth));
             
             let total = 0;
             const summary = {};
