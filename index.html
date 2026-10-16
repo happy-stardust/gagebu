@@ -92,7 +92,7 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">⏰ 납부 마감일 (선택)</label>
                         <input type="date" id="due-date-input" class="w-full border border-pink-200 rounded-lg p-2 bg-white text-gray-600 text-sm">
-                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 마감일을 적으면 상단에 알림 배너가 뜹니다.</p>
+                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 마감일을 적으면 5일 전(D-5)부터 배너가 뜹니다.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📝 메모 (선택)</label>
@@ -153,14 +153,26 @@
         const chartColors = ['#E1CEF0', '#FFE0EB',  '#BDE0FE',  '#DAD9FF',  '#FFFFB4', '#FFD1B5', '#e3f7e8', '#EAEAEA'];
         let annualChartInstance = null;
 
-        window.onload = () => {
+        // --- 🇰🇷 한국 시간(KST)으로 오늘 날짜 구하기 함수 ---
+        function getLocalToday() {
             const now = new Date();
-            const yearMonth = now.toISOString().slice(0, 7);
+            // KST = UTC + 9시간
+            const tzOffset = now.getTimezoneOffset() * 60000; 
+            const localISOTime = new Date(now.getTime() - tzOffset).toISOString();
+            return {
+                fullDate: localISOTime.split('T')[0],
+                yearMonth: localISOTime.slice(0, 7),
+                year: parseInt(localISOTime.slice(0, 4))
+            };
+        }
+
+        window.onload = () => {
+            const todayKST = getLocalToday();
             
-            document.getElementById('date-input').value = now.toISOString().split('T')[0];
-            document.getElementById('month-picker').value = yearMonth;
-            document.getElementById('daily-month-picker').value = yearMonth;
-            document.getElementById('year-display').dataset.year = now.getFullYear();
+            document.getElementById('date-input').value = todayKST.fullDate;
+            document.getElementById('month-picker').value = todayKST.yearMonth;
+            document.getElementById('daily-month-picker').value = todayKST.yearMonth;
+            document.getElementById('year-display').dataset.year = todayKST.year;
             
             initData();
             switchTab('home');
@@ -265,10 +277,8 @@
             const searchKeyword = document.getElementById('search-input').value.toLowerCase().trim();
             const listObj = document.getElementById('recent-list');
             
-            // 1. 달력 월에 맞는 데이터 필터링
             let monthRecords = expenses.filter(e => e.date.startsWith(selectedMonth));
             
-            // 2. 검색어 필터링
             if(searchKeyword) {
                 monthRecords = monthRecords.filter(e => 
                     e.category.toLowerCase().includes(searchKeyword) ||
@@ -277,22 +287,16 @@
                 );
             }
 
-            // 3. 정렬 로직 (미납 > 최신 날짜)
             monthRecords.sort((a, b) => {
                 const aUnpaid = (a.dueDate && !a.isPaid) ? 1 : 0;
                 const bUnpaid = (b.dueDate && !b.isPaid) ? 1 : 0;
                 
-                // 1순위: 미납 여부 (미납이 1이므로 내림차순 하면 위로 감)
                 if (aUnpaid !== bUnpaid) {
                     return bUnpaid - aUnpaid; 
                 }
-                
-                // 2순위: 날짜 (최신 날짜가 위로)
                 if (a.date !== b.date) {
                     return new Date(b.date) - new Date(a.date);
                 }
-
-                // 3순위: 등록순(ID) 최신이 위로
                 return b.id - a.id;
             });
             
@@ -303,7 +307,6 @@
 
             listObj.innerHTML = monthRecords.map(e => {
                 let statusBadge = '';
-                // 미납 건은 눈에 띄도록 배경색을 다르게 줌
                 let bgStyle = 'bg-[#F8F5FF]'; 
                 
                 if(e.dueDate) {
@@ -311,22 +314,22 @@
                         statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
                     } else {
                         statusBadge = `<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer hover:bg-red-200 animate-pulse" onclick="togglePaid(${e.id})">⏳ 미납 (마감:${e.dueDate.slice(5)})</span>`;
-                        bgStyle = 'bg-[#FFF0F5] border-pink-200'; // 미납이면 옅은 핑크색 배경
+                        bgStyle = 'bg-[#FFF0F5] border-pink-200';
                     }
                 }
 
                 return `
                 <li class="flex justify-between items-center ${bgStyle} p-3 rounded border border-[#E6E6FA] mb-2">
-                    <div class="flex-1">
-                        <div class="flex items-center mb-1">
+                    <div class="flex-1 w-0 mr-2">
+                        <div class="flex items-center flex-wrap gap-y-1 mb-1">
                             <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.category}</span>
-                            <span class="text-sm text-gray-500">${e.date.slice(5)}</span>
+                            <span class="text-sm text-gray-500 mr-1">${e.date.slice(5)}</span>
                             ${statusBadge}
                         </div>
-                        ${e.memo ? `<p class="text-xs text-gray-500 mt-1">${e.memo}</p>` : ''}
+                        ${e.memo ? `<p class="text-xs text-gray-500 mt-1 truncate">${e.memo}</p>` : ''}
                     </div>
-                    <div class="flex items-center ml-2">
-                        <strong class="text-gray-800">${e.amount.toLocaleString()}원</strong>
+                    <div class="flex items-center flex-shrink-0 ml-1">
+                        <strong class="text-gray-800 text-right">${e.amount.toLocaleString()}원</strong>
                         <button onclick="deleteExpense(${e.id})" class="ml-3 text-red-300 text-xs hover:text-red-500 p-1">✕</button>
                     </div>
                 </li>
@@ -336,7 +339,8 @@
 
         function renderDDayBanner() {
             const container = document.getElementById('dday-container');
-            const today = new Date();
+            const todayKSTStr = getLocalToday().fullDate;
+            const today = new Date(todayKSTStr);
             today.setHours(0, 0, 0, 0);
 
             const upcoming = expenses.filter(e => {
@@ -345,7 +349,8 @@
                 dDate.setHours(0, 0, 0, 0);
                 const diffTime = dDate - today;
                 const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                return diffDays >= 0 && diffDays <= 14; 
+                // D-5일 전부터 띄움
+                return diffDays >= 0 && diffDays <= 5; 
             });
 
             if (upcoming.length === 0) {
@@ -364,11 +369,11 @@
                 
                 return `
                 <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-4 rounded-lg shadow-sm flex justify-between items-center mb-2">
-                    <div>
-                        <span class="font-bold text-[#D87093] text-sm">🚨 [${e.category}] 납부 ${dText}</span>
-                        <p class="text-xs text-[#D87093] opacity-80 mt-1">${e.memo ? e.memo : '잊지 말고 납부하세요!'}</p>
+                    <div class="flex-1 w-0 mr-2">
+                        <span class="font-bold text-[#D87093] text-sm block truncate">🚨 [${e.category}] 납부 ${dText}</span>
+                        <p class="text-xs text-[#D87093] opacity-80 mt-1 truncate">${e.memo ? e.memo : '잊지 말고 납부하세요!'}</p>
                     </div>
-                    <div class="flex flex-col items-end">
+                    <div class="flex flex-col items-end flex-shrink-0">
                         <strong class="text-[#D87093] text-lg mb-1">${e.amount.toLocaleString()}원</strong>
                         <button onclick="togglePaid(${e.id})" class="bg-[#D87093] text-white text-xs px-3 py-1.5 rounded-full hover:bg-pink-600 shadow transition font-bold">납부 완료하기</button>
                     </div>
@@ -376,10 +381,17 @@
             }).join('');
         }
 
+        // --- 납부 완료 토글 함수 (오늘 날짜로 자동 변경 추가) ---
         function togglePaid(id) {
             const exp = expenses.find(e => e.id === id);
             if(exp) {
                 exp.isPaid = !exp.isPaid;
+                
+                // ✅ 미납에서 '납부 완료'로 변경될 때, 지출 날짜를 '오늘(납부한 날)'로 업데이트합니다!
+                if(exp.isPaid) {
+                    exp.date = getLocalToday().fullDate;
+                }
+
                 localStorage.setItem('myExpenses', JSON.stringify(expenses));
                 renderRecentList();
                 renderDDayBanner(); 
@@ -391,6 +403,7 @@
             input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
+        // --- 2. 월간 요약 ---
         function changeMonth(delta) {
             const picker = document.getElementById('month-picker');
             const d = new Date(picker.value + '-01');
@@ -399,14 +412,13 @@
             renderMonthly();
         }
 
-        // --- 월간 요약 렌더링 (아코디언 펼쳐보기 기능 적용) ---
         function renderMonthly() {
-             targetMonth = document.getElementById('month-picker').value;
-             monthlyExps = expenses.filter(e => e.date.startsWith(targetMonth));
+            const targetMonth = document.getElementById('month-picker').value;
+            const monthlyExps = expenses.filter(e => e.date.startsWith(targetMonth));
             
             let total = 0;
             const summary = {};
-            const details = {}; // 항목별 상세 내역을 저장할 객체
+            const details = {}; 
             
             categories.forEach(cat => { 
                 summary[cat] = 0; 
@@ -429,11 +441,10 @@
             const listObj = document.getElementById('monthly-summary-list');
             listObj.innerHTML = Object.entries(summary)
                 .filter(([_, amt]) => amt > 0)
-                .sort((a, b) => b[1] - a[1]) // 총액 큰 순서대로
+                .sort((a, b) => b[1] - a[1]) 
                 .map(([cat, amt]) => {
                     const percent = total > 0 ? Math.round((amt/total)*100) : 0;
                     
-                    // 세부 내역 HTML 생성 (최신 날짜순 정렬)
                     const detailHTML = details[cat].sort((a, b) => new Date(b.date) - new Date(a.date)).map(d => `
                         <div class="flex justify-between items-center text-xs py-2 border-b border-gray-100 last:border-0">
                             <span class="text-gray-500 flex-1 truncate mr-2">${d.date.slice(5)} ${d.memo ? `· ${d.memo}` : ''}</span>
@@ -441,12 +452,10 @@
                         </div>
                     `).join('');
 
-                    // 아이디 값에 공백이 들어갈 수 있으므로 안전하게 변환
                     const safeCatId = 'cat-' + cat.replace(/\s+/g, '-');
 
                     return `
                     <li class="bg-[#F8F5FF] rounded-lg border border-[#E6E6FA] overflow-hidden mb-3 shadow-sm">
-                        <!-- 터치 시 아코디언 토글 -->
                         <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-[#E6E6FA] transition" onclick="toggleAccordion('${safeCatId}')">
                             <div class="flex flex-col">
                                 <span class="font-bold text-gray-700 text-base">${cat}</span>
@@ -457,8 +466,6 @@
                                 <span id="icon-${safeCatId}" class="text-gray-400 text-xs transform transition-transform duration-200">▼</span>
                             </div>
                         </div>
-                        
-                        <!-- 펼쳐지는 숨김 상세 내역 영역 -->
                         <div id="detail-${safeCatId}" class="hidden bg-white px-4 py-2 border-t border-[#E6E6FA]">
                             ${detailHTML}
                         </div>
@@ -468,20 +475,20 @@
             if(listObj.innerHTML === '') listObj.innerHTML = '<li class="text-center text-gray-400 py-4">지출 내역이 없습니다.</li>';
         }
 
-        // 아코디언 열고 닫는 토글 함수
         function toggleAccordion(catId) {
             const detailDiv = document.getElementById(`detail-${catId}`);
             const icon = document.getElementById(`icon-${catId}`);
             
             if (detailDiv.classList.contains('hidden')) {
                 detailDiv.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)'; // 화살표 뒤집기
+                icon.style.transform = 'rotate(180deg)'; 
             } else {
                 detailDiv.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)'; // 원래대로
+                icon.style.transform = 'rotate(0deg)'; 
             }
         }
 
+        // --- 3. 연간 그래프 ---
         function changeYear(delta) {
             const display = document.getElementById('year-display');
             let year = parseInt(display.dataset.year) + delta;
