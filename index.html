@@ -17,17 +17,17 @@
         }
         body { font-family: 'Munhwa', sans-serif !important; }
         .tab-btn { transition: all 0.2s; }
-        .tab-active { border-bottom: 3px solid #B592FF; color: #B592FF; font-weight: bold; }
+        .tab-active { border-bottom: 3px solid #9483BE; color: #9483BE; font-weight: bold; }
         .hidden { display: none; }
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #E6E6FA; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #E6E0EF; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-md flex flex-col">
 
         <!-- 헤더 -->
-        <header class="bg-[#B592FF] text-white p-4 text-center text-lg font-bold cursor-pointer hover:bg-[#9B72FF] transition" onclick="switchTab('home')">
+        <header class="bg-[#9483BE] text-white p-4 text-center text-lg font-bold cursor-pointer hover:bg-[#7F6EA8] transition" onclick="switchTab('home')">
          💜 탐뽀뽀 스마트 가계부 💜
         </header>
 
@@ -49,26 +49,26 @@
             </div>
 
             <div class="text-center mb-4 px-2">
-                <h2 class="text-lg font-bold text-[#7B68EE] mb-1 leading-snug">오늘을 어떤 조각들로 채웠나요 💜✨</h2>
+                <h2 class="text-lg font-bold text-[#6E5E9E] mb-1 leading-snug">오늘을 어떤 조각들로 채웠나요 💜✨</h2>
                 <p class="text-xs text-gray-500 mt-1">원하시는 메뉴를 선택해주세요</p>
             </div>
 
             <div class="w-full space-y-3">
-                <button onclick="switchTab('daily')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
+                <button onclick="switchTab('daily')" class="w-full bg-[#F6F3FA] border border-[#E6E0EF] text-[#6E5E9E] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E0EF] transition flex items-center text-sm">
                     <span class="text-xl mr-3">📝</span> 일간 기록 (지출 작성)
                 </button>
-                <button onclick="switchTab('monthly')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
+                <button onclick="switchTab('monthly')" class="w-full bg-[#F6F3FA] border border-[#E6E0EF] text-[#6E5E9E] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E0EF] transition flex items-center text-sm">
                     <span class="text-xl mr-3">📅</span> 월간 지출 요약
                 </button>
-                <button onclick="switchTab('annual')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
+                <button onclick="switchTab('annual')" class="w-full bg-[#F6F3FA] border border-[#E6E0EF] text-[#6E5E9E] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E0EF] transition flex items-center text-sm">
                     <span class="text-xl mr-3">📈</span> 연간 그래프 추이
                 </button>
-                <button onclick="switchTab('settings')" class="w-full bg-[#F8F5FF] border border-[#E6E6FA] text-[#7B68EE] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E6FA] transition flex items-center text-sm">
+                <button onclick="switchTab('settings')" class="w-full bg-[#F6F3FA] border border-[#E6E0EF] text-[#6E5E9E] font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-[#E6E0EF] transition flex items-center text-sm">
                     <span class="text-xl mr-3">⚙️</span> 고정지출 · 카테고리 · 백업
                 </button>
             </div>
 
-            <p id="backup-nudge" class="text-xs text-center text-[#D87093] hidden"></p>
+            <p id="backup-nudge" class="text-xs text-center text-[#B9738A] hidden"></p>
 
             <p class="text-xs text-center text-gray-400 mt-6">
                 ※ 상단 보라색 제목을 누르면 언제든 이 화면으로 돌아옵니다.
@@ -79,8 +79,8 @@
         <div id="view-daily" class="p-5 hidden flex-1 overflow-y-auto">
             <div id="dday-container" class="mb-4 space-y-2"></div>
 
-            <div id="form-box" class="bg-[#F8F5FF] p-4 rounded-lg mb-6 shadow-sm border border-[#E6E6FA]">
-                <p id="edit-notice" class="hidden text-sm font-bold text-[#7B68EE] mb-3">✏️ 기록을 수정하는 중이에요</p>
+            <div id="form-box" class="bg-[#F6F3FA] p-4 rounded-lg mb-6 shadow-sm border border-[#E6E0EF]">
+                <p id="edit-notice" class="hidden text-sm font-bold text-[#6E5E9E] mb-3">✏️ 기록을 수정하는 중이에요</p>
                 <form id="expense-form" class="space-y-4" onsubmit="return false;">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📅 날짜</label>
@@ -97,13 +97,13 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">⏰ 납부 마감일 (선택)</label>
                         <input type="date" id="due-date-input" class="w-full border border-pink-200 rounded-lg p-2 bg-white text-gray-600 text-sm">
-                        <p class="text-xs text-[#D87093] mt-1 ml-1">* 마감일을 적으면 10일 전(D-10)부터 배너가 뜹니다.</p>
+                        <p class="text-xs text-[#B9738A] mt-1 ml-1">* 마감일을 적으면 10일 전(D-10)부터 배너가 뜹니다.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">📝 메모 (선택)</label>
                         <input type="text" id="memo-input" class="w-full border rounded-lg p-2 bg-white text-sm" placeholder="예: 냥이즈 간식 등">
                     </div>
-                    <button type="button" id="save-btn" onclick="saveExpense()" class="w-full bg-[#B592FF] text-white font-bold py-3 rounded-lg hover:bg-[#9B72FF] transition shadow-md">
+                    <button type="button" id="save-btn" onclick="saveExpense()" class="w-full bg-[#9483BE] text-white font-bold py-3 rounded-lg hover:bg-[#7F6EA8] transition shadow-md">
                         기록 추가하기
                     </button>
                     <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" class="hidden w-full bg-white text-gray-500 border border-gray-200 font-bold py-2 rounded-lg hover:bg-gray-50 transition">
@@ -114,13 +114,13 @@
 
             <div class="flex justify-between items-end mb-2 border-b pb-2">
                 <h3 class="font-bold text-gray-700">📝 상세 지출 내역</h3>
-                <input type="month" id="daily-month-picker" class="border border-[#E6E6FA] text-gray-600 rounded px-2 py-1 text-sm bg-[#F8F5FF]" oninput="renderRecentList()" onchange="renderRecentList()">
+                <input type="month" id="daily-month-picker" class="border border-[#E6E0EF] text-gray-600 rounded px-2 py-1 text-sm bg-[#F6F3FA]" oninput="renderRecentList()" onchange="renderRecentList()">
             </div>
-            <input type="text" id="search-input" class="w-full border border-[#E6E6FA] text-gray-600 rounded px-3 py-2 text-sm bg-white mb-4" placeholder="🔍 카테고리, 메모, 금액 검색" oninput="renderRecentList()">
+            <input type="text" id="search-input" class="w-full border border-[#E6E0EF] text-gray-600 rounded px-3 py-2 text-sm bg-white mb-4" placeholder="🔍 카테고리, 메모, 금액 검색" oninput="renderRecentList()">
 
             <ul id="recent-list" class="space-y-2 text-sm"></ul>
 
-            <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E6FA] text-[#7B68EE] border border-[#C3B1E1] font-bold py-3 rounded-lg hover:bg-[#D8B4FE] hover:text-white transition shadow-sm">
+            <button onclick="exportToCSV()" class="mt-6 w-full bg-[#E6E0EF] text-[#6E5E9E] border border-[#C9BEDD] font-bold py-3 rounded-lg hover:bg-[#B9AECB] hover:text-white transition shadow-sm">
                 📥 한셀/엑셀로 데이터 다운로드
             </button>
         </div>
@@ -132,9 +132,9 @@
                 <input type="month" id="month-picker" class="font-bold text-lg border-none text-center bg-transparent" onchange="renderMonthly()">
                 <button onclick="changeMonth(1)" class="p-2 bg-gray-100 rounded hover:bg-gray-200">▶</button>
             </div>
-            <div class="bg-[#F4F0FF] border border-[#E6E6FA] text-gray-800 p-5 rounded-lg mb-6 shadow-md text-center">
+            <div class="bg-[#F1EDF7] border border-[#E6E0EF] text-gray-800 p-5 rounded-lg mb-6 shadow-md text-center">
                 <p class="text-sm text-gray-500 mb-1">이번 달 총 지출액</p>
-                <p id="monthly-total" class="text-3xl font-bold text-[#7B68EE]">0원</p>
+                <p id="monthly-total" class="text-3xl font-bold text-[#6E5E9E]">0원</p>
             </div>
             <div id="monthly-recurring" class="mb-6"></div>
             <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">카테고리별 요약 <span class="text-xs font-normal text-gray-400 ml-1">(터치하여 상세 보기)</span></h3>
@@ -160,7 +160,7 @@
             <section>
                 <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">🔁 매달 고정 지출</h3>
                 <p class="text-xs text-gray-500 mb-3">한 번 등록하면 매달 자동으로 기록이 만들어져요. 마감일 관리를 켜면 미납 상태로 생겨서 D-10 배너로 알려줘요. 금액이 매달 다르면 만들어진 기록을 ✏️로 고치면 돼요.</p>
-                <div class="bg-[#F8F5FF] p-4 rounded-lg shadow-sm border border-[#E6E6FA] space-y-3">
+                <div class="bg-[#F6F3FA] p-4 rounded-lg shadow-sm border border-[#E6E0EF] space-y-3">
                     <div class="flex gap-2">
                         <select id="rec-category" class="flex-1 border rounded-lg p-2 bg-white text-sm"></select>
                         <input type="number" id="rec-day" min="1" max="31" class="w-24 border rounded-lg p-2 bg-white text-sm" placeholder="매월 ?일">
@@ -174,7 +174,7 @@
                         <option value="this">이번 달부터 시작</option>
                         <option value="next">다음 달부터 시작</option>
                     </select>
-                    <button type="button" onclick="addRecurring()" class="w-full bg-[#B592FF] text-white font-bold py-2.5 rounded-lg hover:bg-[#9B72FF] transition shadow-md text-sm">고정 지출 등록</button>
+                    <button type="button" onclick="addRecurring()" class="w-full bg-[#9483BE] text-white font-bold py-2.5 rounded-lg hover:bg-[#7F6EA8] transition shadow-md text-sm">고정 지출 등록</button>
                 </div>
                 <ul id="recurring-list" class="mt-3 space-y-2 text-sm"></ul>
             </section>
@@ -184,17 +184,17 @@
                 <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">🗂️ 카테고리 관리</h3>
                 <p class="text-xs text-gray-500 mb-3">이름을 바꾸면 지난 기록도 함께 바뀌어요. 삭제해도 지난 기록은 그대로 남아요.</p>
                 <ul id="category-manage-list" class="space-y-2 text-sm"></ul>
-                <button type="button" onclick="addCategoryFromSettings()" class="mt-3 w-full bg-white text-[#7B68EE] border border-[#C3B1E1] font-bold py-2.5 rounded-lg hover:bg-[#F8F5FF] transition text-sm">+ 새 카테고리 추가</button>
+                <button type="button" onclick="addCategoryFromSettings()" class="mt-3 w-full bg-white text-[#6E5E9E] border border-[#C9BEDD] font-bold py-2.5 rounded-lg hover:bg-[#F6F3FA] transition text-sm">+ 새 카테고리 추가</button>
             </section>
 
             <!-- 백업 -->
             <section>
                 <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">💾 백업 · 불러오기</h3>
                 <p class="text-xs text-gray-500 mb-1">기록은 이 기기의 브라우저에만 저장돼요. 브라우저 데이터를 지우거나 기기를 바꾸면 사라지니, 가끔 백업 파일을 저장해두세요.</p>
-                <p id="last-backup" class="text-xs text-[#7B68EE] mb-3"></p>
+                <p id="last-backup" class="text-xs text-[#6E5E9E] mb-3"></p>
                 <div class="flex gap-2">
-                    <button type="button" onclick="exportBackup()" class="flex-1 bg-[#B592FF] text-white font-bold py-2.5 rounded-lg hover:bg-[#9B72FF] transition shadow-md text-sm">백업 파일 저장</button>
-                    <button type="button" onclick="document.getElementById('import-file').click()" class="flex-1 bg-white text-[#7B68EE] border border-[#C3B1E1] font-bold py-2.5 rounded-lg hover:bg-[#F8F5FF] transition text-sm">백업 불러오기</button>
+                    <button type="button" onclick="exportBackup()" class="flex-1 bg-[#9483BE] text-white font-bold py-2.5 rounded-lg hover:bg-[#7F6EA8] transition shadow-md text-sm">백업 파일 저장</button>
+                    <button type="button" onclick="document.getElementById('import-file').click()" class="flex-1 bg-white text-[#6E5E9E] border border-[#C9BEDD] font-bold py-2.5 rounded-lg hover:bg-[#F6F3FA] transition text-sm">백업 불러오기</button>
                 </div>
                 <input type="file" id="import-file" accept=".json,application/json" class="hidden" onchange="importBackup(this)">
             </section>
@@ -221,7 +221,7 @@
         let categories = load('myCategories', ['공과금', '관리비', '통신료', '보험료', '학원비', '식비']);
         let recurring = load('myRecurring', []);
 
-        const chartColors = ['#C9B8E8', '#EDDCA0', '#A9C8E3', '#E8B4BC', '#B8D4B0', '#F2C6A8', '#A8D5CC', '#D4B3D6', '#CFC4B8', '#A9B3BF'];
+        const chartColors = ['#B9AECB', '#D9CDA4', '#A3B6C6', '#CFA9AE', '#AFC0A8', '#D8B8A3', '#A3C2BC', '#BFA7BF', '#C2B8AE', '#A0A7B0'];
         let annualChartInstance = null;
         let editingId = null;
         let currentTab = 'home';
@@ -463,7 +463,7 @@
             $('save-btn').textContent = '✏️ 수정 완료';
             $('cancel-edit-btn').classList.remove('hidden');
             $('edit-notice').classList.remove('hidden');
-            $('form-box').classList.add('ring-2', 'ring-[#B592FF]');
+            $('form-box').classList.add('ring-2', 'ring-[#9483BE]');
             $('form-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -475,7 +475,7 @@
             $('save-btn').textContent = '기록 추가하기';
             $('cancel-edit-btn').classList.add('hidden');
             $('edit-notice').classList.add('hidden');
-            $('form-box').classList.remove('ring-2', 'ring-[#B592FF]');
+            $('form-box').classList.remove('ring-2', 'ring-[#9483BE]');
         }
 
         function deleteExpense(id) {
@@ -543,22 +543,22 @@
 
             listObj.innerHTML = monthRecords.map(e => {
                 let statusBadge = '';
-                let bgStyle = 'bg-[#F8F5FF]';
+                let bgStyle = 'bg-[#F6F3FA]';
 
                 if (e.dueDate) {
                     if (e.isPaid) {
                         statusBadge = `<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-bold cursor-pointer hover:bg-green-200" onclick="togglePaid(${e.id})">✅ 납부완료</span>`;
                     } else {
                         statusBadge = `<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer hover:bg-red-200" onclick="togglePaid(${e.id})">⏳ 미납 (마감:${e.dueDate.slice(5)})</span>`;
-                        bgStyle = 'bg-[#FFF0F5] border-pink-200';
+                        bgStyle = 'bg-[#FAF1F3] border-pink-200';
                     }
                 }
 
                 return `
-                <li class="flex justify-between items-center ${bgStyle} p-3 rounded border border-[#E6E6FA] mb-2">
+                <li class="flex justify-between items-center ${bgStyle} p-3 rounded border border-[#E6E0EF] mb-2">
                     <div class="flex-1 w-0 mr-2">
                         <div class="flex items-center flex-wrap gap-y-1 mb-1">
-                            <span class="inline-block bg-[#E6E6FA] text-[#7B68EE] text-xs px-2 py-1 rounded mr-2">${e.recurringId ? '🔁 ' : ''}${esc(e.category)}</span>
+                            <span class="inline-block bg-[#E6E0EF] text-[#6E5E9E] text-xs px-2 py-1 rounded mr-2">${e.recurringId ? '🔁 ' : ''}${esc(e.category)}</span>
                             <span class="text-sm text-gray-500 mr-1">${e.date.slice(5)}</span>
                             ${statusBadge}
                         </div>
@@ -566,7 +566,7 @@
                     </div>
                     <div class="flex items-center flex-shrink-0 ml-1">
                         <strong class="text-gray-800 text-right">${e.amount.toLocaleString()}원</strong>
-                        <button onclick="startEdit(${e.id})" class="ml-2 text-gray-400 text-xs hover:text-[#7B68EE] p-1">✏️</button>
+                        <button onclick="startEdit(${e.id})" class="ml-2 text-gray-400 text-xs hover:text-[#6E5E9E] p-1">✏️</button>
                         <button onclick="deleteExpense(${e.id})" class="ml-1 text-red-300 text-xs hover:text-red-500 p-1">✕</button>
                     </div>
                 </li>`;
@@ -594,14 +594,14 @@
                 else dText = `기한 지남 (+${Math.abs(diffDays)}일)`;
 
                 return `
-                <div class="bg-[#FFF0F5] border border-[#FFB6C1] p-4 rounded-lg shadow-sm flex justify-between items-center mb-2">
+                <div class="bg-[#FAF1F3] border border-[#E6C3CB] p-4 rounded-lg shadow-sm flex justify-between items-center mb-2">
                     <div class="flex-1 w-0 mr-2">
-                        <span class="font-bold text-[#D87093] text-sm block truncate">🚨 [${esc(e.category)}] 납부 ${dText}</span>
-                        <p class="text-xs text-[#D87093] opacity-80 mt-1 truncate">${e.memo ? esc(e.memo) : '잊지 말고 납부하세요!'}</p>
+                        <span class="font-bold text-[#B9738A] text-sm block truncate">🚨 [${esc(e.category)}] 납부 ${dText}</span>
+                        <p class="text-xs text-[#B9738A] opacity-80 mt-1 truncate">${e.memo ? esc(e.memo) : '잊지 말고 납부하세요!'}</p>
                     </div>
                     <div class="flex flex-col items-end flex-shrink-0">
-                        <strong class="text-[#D87093] text-lg mb-1">${e.amount.toLocaleString()}원</strong>
-                        <button onclick="togglePaid(${e.id})" class="bg-[#D87093] text-white text-xs px-3 py-1.5 rounded-full hover:bg-pink-600 shadow transition font-bold">납부 완료하기</button>
+                        <strong class="text-[#B9738A] text-lg mb-1">${e.amount.toLocaleString()}원</strong>
+                        <button onclick="togglePaid(${e.id})" class="bg-[#B9738A] text-white text-xs px-3 py-1.5 rounded-full hover:bg-[#A35F76] shadow transition font-bold">납부 완료하기</button>
                     </div>
                 </div>`;
             }).join('');
@@ -713,14 +713,14 @@
                     else status = '<span class="text-red-500">⏳ 이번 달 미납</span>';
 
                     return `
-                    <li class="flex justify-between items-center bg-[#F8F5FF] p-3 rounded border border-[#E6E6FA]">
+                    <li class="flex justify-between items-center bg-[#F6F3FA] p-3 rounded border border-[#E6E0EF]">
                         <div class="flex-1 w-0 mr-2">
                             <p class="font-bold text-gray-700 truncate">${esc(r.category)} <span class="text-xs font-normal text-gray-500">· 매월 ${r.day}일${r.memo ? ' · ' + esc(r.memo) : ''}</span></p>
                             <p class="text-xs mt-1">${status}</p>
                         </div>
                         <div class="flex items-center flex-shrink-0">
                             <strong class="text-gray-800">${r.amount.toLocaleString()}원</strong>
-                            <button onclick="editRecurring(${r.id})" class="ml-2 text-gray-400 text-xs hover:text-[#7B68EE] p-1">✏️</button>
+                            <button onclick="editRecurring(${r.id})" class="ml-2 text-gray-400 text-xs hover:text-[#6E5E9E] p-1">✏️</button>
                             <button onclick="deleteRecurring(${r.id})" class="ml-1 text-red-300 text-xs hover:text-red-500 p-1">✕</button>
                         </div>
                     </li>`;
@@ -728,12 +728,12 @@
 
             // 카테고리 목록
             $('category-manage-list').innerHTML = categories.map((c, i) => `
-                <li class="flex justify-between items-center bg-[#F8F5FF] px-3 py-2 rounded border border-[#E6E6FA]">
+                <li class="flex justify-between items-center bg-[#F6F3FA] px-3 py-2 rounded border border-[#E6E0EF]">
                     <span class="flex-1 w-0 truncate font-bold text-gray-700">${esc(c)}</span>
                     <div class="flex items-center flex-shrink-0 text-xs">
-                        <button onclick="moveCategory(${i}, -1)" class="p-1.5 text-gray-400 hover:text-[#7B68EE]">▲</button>
-                        <button onclick="moveCategory(${i}, 1)" class="p-1.5 text-gray-400 hover:text-[#7B68EE]">▼</button>
-                        <button onclick="renameCategory(${i})" class="ml-1 px-2 py-1 bg-white border border-[#E6E6FA] rounded text-[#7B68EE]">이름 변경</button>
+                        <button onclick="moveCategory(${i}, -1)" class="p-1.5 text-gray-400 hover:text-[#6E5E9E]">▲</button>
+                        <button onclick="moveCategory(${i}, 1)" class="p-1.5 text-gray-400 hover:text-[#6E5E9E]">▼</button>
+                        <button onclick="renameCategory(${i})" class="ml-1 px-2 py-1 bg-white border border-[#E6E0EF] rounded text-[#6E5E9E]">이름 변경</button>
                         <button onclick="deleteCategory(${i})" class="ml-1 px-2 py-1 bg-white border border-pink-200 rounded text-red-400">삭제</button>
                     </div>
                 </li>`).join('');
@@ -861,7 +861,7 @@
                                 : `<span class="px-2 py-0.5 bg-red-100 text-red-500 rounded text-xs font-bold cursor-pointer" onclick="togglePaid(${e.id})">⏳ 미납</span>`;
                         }
                         return `
-                        <li class="flex justify-between items-center bg-[#F8F5FF] px-3 py-2 rounded border border-[#E6E6FA]">
+                        <li class="flex justify-between items-center bg-[#F6F3FA] px-3 py-2 rounded border border-[#E6E0EF]">
                             <span class="flex-1 w-0 truncate text-gray-700">${esc(e.category)}${e.memo ? ` <span class="text-xs text-gray-400">· ${esc(e.memo)}</span>` : ''}</span>
                             <span class="flex items-center flex-shrink-0 gap-2">
                                 <span class="text-gray-800 font-medium">${e.amount.toLocaleString()}원</span>
@@ -888,18 +888,18 @@
                     const safeId = 'cat-' + idx;
 
                     return `
-                    <li class="bg-[#F8F5FF] rounded-lg border border-[#E6E6FA] overflow-hidden mb-3 shadow-sm">
-                        <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-[#E6E6FA] transition" onclick="toggleAccordion('${safeId}')">
+                    <li class="bg-[#F6F3FA] rounded-lg border border-[#E6E0EF] overflow-hidden mb-3 shadow-sm">
+                        <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-[#E6E0EF] transition" onclick="toggleAccordion('${safeId}')">
                             <div class="flex flex-col">
                                 <span class="font-bold text-gray-700 text-base">${esc(cat)}</span>
                                 <span class="text-xs text-gray-400 mt-0.5">${percent}% 차지</span>
                             </div>
                             <div class="flex items-center">
-                                <span class="text-lg font-bold text-[#7B68EE] mr-2">${amt.toLocaleString()}원</span>
+                                <span class="text-lg font-bold text-[#6E5E9E] mr-2">${amt.toLocaleString()}원</span>
                                 <span id="icon-${safeId}" class="text-gray-400 text-xs transform transition-transform duration-200">▼</span>
                             </div>
                         </div>
-                        <div id="detail-${safeId}" class="hidden bg-white px-4 py-2 border-t border-[#E6E6FA]">
+                        <div id="detail-${safeId}" class="hidden bg-white px-4 py-2 border-t border-[#E6E0EF]">
                             ${detailHTML}
                         </div>
                     </li>`;
