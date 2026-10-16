@@ -28,7 +28,7 @@
 
         <!-- 헤더 -->
         <header class="bg-[#9483BE] text-white p-4 text-center text-lg font-bold cursor-pointer hover:bg-[#7F6EA8] transition" onclick="switchTab('home')">
-         💜 탐뽀뽀 스마트 가계부 💜
+         🪻 탐뽀뽀 스마트 가계부 🪻
         </header>
 
         <!-- 탭 메뉴 -->
@@ -221,7 +221,7 @@
         let categories = load('myCategories', ['공과금', '관리비', '통신료', '보험료', '학원비', '식비']);
         let recurring = load('myRecurring', []);
 
-        const chartColors = ['#B9AECB', '#D9CDA4', '#A3B6C6', '#CFA9AE', '#AFC0A8', '#D8B8A3', '#A3C2BC', '#BFA7BF', '#C2B8AE', '#A0A7B0'];
+        const chartColors = ['#B9AECB', '#AFC0A8', '#BFA7BF', '#CFA9AE', '#D9CDA4', '#D8B8A3', '#A3C2BC', '#A3B6C6', '#C2B8AE', '#A0A7B0'];
         let annualChartInstance = null;
         let editingId = null;
         let currentTab = 'home';
@@ -953,19 +953,56 @@
             const ctx = $('annualChart').getContext('2d');
             if (annualChartInstance) annualChartInstance.destroy();
 
+            let openMonth = null; // 지금 상세 설명이 열려 있는 달
+
             annualChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'], datasets: activeDatasets },
+                data: { labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'], datasets: activeDatasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
+                    events: ['click'],
+                    // 막대를 누르면 상세 설명이 뜨고, 같은 막대를 한 번 더 누르면 닫힘
+                    onClick: (evt, _els, chart) => {
+                        const pts = chart.getElementsAtEventForMode(evt, 'index', { intersect: false }, false)
+                            .filter(p => chart.data.datasets[p.datasetIndex].data[p.index] > 0);
+                        if (pts.length === 0 || pts[0].index === openMonth) {
+                            openMonth = null;
+                            chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                        } else {
+                            openMonth = pts[0].index;
+                            chart.tooltip.setActiveElements(
+                                pts.map(p => ({ datasetIndex: p.datasetIndex, index: p.index })),
+                                { x: evt.x, y: evt.y }
+                            );
+                        }
+                        chart.update();
+                    },
                     scales: {
-                        x: { stacked: true },
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: { maxRotation: 0, autoSkip: false, font: { size: 10 }, color: '#9CA3AF' }
+                        },
                         y: {
                             stacked: true, beginAtZero: true, suggestedMax: 100000,
-                            ticks: { callback: (v) => v >= 10000 ? (v / 10000).toLocaleString() + '만' : v.toLocaleString() }
+                            grid: { color: '#F0EEF4' },
+                            ticks: { font: { size: 10 }, color: '#9CA3AF', callback: (v) => v >= 10000 ? (v / 10000).toLocaleString() + '만' : v.toLocaleString() }
                         }
                     },
-                    plugins: { tooltip: { mode: 'index', intersect: false, callbacks: { label: (c) => `${c.dataset.label}: ${c.raw.toLocaleString()}원` } } }
+                    plugins: {
+                        legend: {
+                            labels: { usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 10, boxHeight: 10, padding: 14 }
+                        },
+                        tooltip: {
+                            events: [],
+                            mode: 'index', intersect: false,
+                            filter: (item) => item.raw > 0,
+                            callbacks: {
+                                title: (items) => items.length ? items[0].label + '월' : '',
+                                label: (c) => `${c.dataset.label}: ${c.raw.toLocaleString()}원`
+                            }
+                        }
+                    }
                 }
             });
         }
