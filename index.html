@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://i.pinimg.com/originals/7c/3f/89/7c3f89dae0f01110822941449b6a0a18.jpg">
     <link rel="apple-touch-icon" href="https://i.pinimg.com/originals/7c/3f/89/7c3f89dae0f01110822941449b6a0a18.jpg">
-    <title>💜 탐뽀뽀 스마트 가계부 💜</title>
+    <title> 🪻🤍 </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <style>
@@ -334,13 +334,17 @@
         }
 
         // ---------- 카테고리 ----------
+        // 카테고리가 비어 있으면 '미분류'로 보여줌
+        function catLabel(c) { return c ? c : '미분류'; }
+
         function renderCategorySelect(selected) {
             const select = $('category-select');
             const list = [...categories];
             if (selected && !list.includes(selected)) list.push(selected);
-            select.innerHTML = list.map(cat => `<option value="${esc(cat)}">${esc(cat)}</option>`).join('')
+            select.innerHTML = `<option value="">미분류 (나중에 선택)</option>`
+                + list.map(cat => `<option value="${esc(cat)}">${esc(cat)}</option>`).join('')
                 + `<option value="ADD_NEW">+ 새 항목 직접 추가...</option>`;
-            if (selected) select.value = selected;
+            select.value = selected || '';
         }
 
         function addCategoryName(raw) {
@@ -357,7 +361,7 @@
             const select = $('category-select');
             if (select.value === 'ADD_NEW') {
                 const name = addCategoryName(prompt('추가할 카테고리 이름을 입력하세요:'));
-                renderCategorySelect(name || categories[0]);
+                renderCategorySelect(name || '');
                 renderSettings();
             }
         }
@@ -442,13 +446,14 @@
                 expenses.push({ id: newId(), date, category, amount, dueDate, memo, isPaid: !dueDate });
                 saveAll();
                 clearForm();
+                renderCategorySelect();
                 $('daily-month-picker').value = date.slice(0, 7);
                 alert('기록되었습니다!');
             }
             refreshAll();
         }
 
-        function startEdit(id) {
+        function startEdit(id, focusCategory) {
             const e = expenses.find(x => x.id === id);
             if (!e) return;
             editingId = id;
@@ -465,6 +470,7 @@
             $('edit-notice').classList.remove('hidden');
             $('form-box').classList.add('ring-2', 'ring-[#9483BE]');
             $('form-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (focusCategory) setTimeout(() => $('category-select').focus(), 400);
         }
 
         function cancelEdit() {
@@ -525,7 +531,7 @@
 
             if (keyword) {
                 monthRecords = monthRecords.filter(e =>
-                    e.category.toLowerCase().includes(keyword) ||
+                    catLabel(e.category).toLowerCase().includes(keyword) ||
                     (e.memo && e.memo.toLowerCase().includes(keyword)) ||
                     (amountKeyword && e.amount.toString().includes(amountKeyword))
                 );
@@ -558,7 +564,9 @@
                 <li class="flex justify-between items-center ${bgStyle} p-3 rounded border border-[#E6E0EF] mb-2">
                     <div class="flex-1 w-0 mr-2">
                         <div class="flex items-center flex-wrap gap-y-1 mb-1">
-                            <span class="inline-block bg-[#E6E0EF] text-[#6E5E9E] text-xs px-2 py-1 rounded mr-2">${e.recurringId ? '🔁 ' : ''}${esc(e.category)}</span>
+                            ${e.category
+                                ? `<span class="inline-block bg-[#E6E0EF] text-[#6E5E9E] text-xs px-2 py-1 rounded mr-2">${e.recurringId ? '🔁 ' : ''}${esc(e.category)}</span>`
+                                : `<span class="inline-block bg-gray-100 text-gray-500 border border-dashed border-gray-300 text-xs px-2 py-1 rounded mr-2 cursor-pointer" onclick="startEdit(${e.id}, true)">미분류 · 선택하기</span>`}
                             <span class="text-sm text-gray-500 mr-1">${e.date.slice(5)}</span>
                             ${statusBadge}
                         </div>
@@ -596,7 +604,7 @@
                 return `
                 <div class="bg-[#FAF1F3] border border-[#E6C3CB] p-4 rounded-lg shadow-sm flex justify-between items-center mb-2">
                     <div class="flex-1 w-0 mr-2">
-                        <span class="font-bold text-[#B9738A] text-sm block truncate">🚨 [${esc(e.category)}] 납부 ${dText}</span>
+                        <span class="font-bold text-[#B9738A] text-sm block truncate">🚨 [${esc(catLabel(e.category))}] 납부 ${dText}</span>
                         <p class="text-xs text-[#B9738A] opacity-80 mt-1 truncate">${e.memo ? esc(e.memo) : '잊지 말고 납부하세요!'}</p>
                     </div>
                     <div class="flex flex-col items-end flex-shrink-0">
@@ -891,7 +899,7 @@
                     <li class="bg-[#F6F3FA] rounded-lg border border-[#E6E0EF] overflow-hidden mb-3 shadow-sm">
                         <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-[#E6E0EF] transition" onclick="toggleAccordion('${safeId}')">
                             <div class="flex flex-col">
-                                <span class="font-bold text-gray-700 text-base">${esc(cat)}</span>
+                                <span class="font-bold ${cat ? 'text-gray-700' : 'text-gray-400'} text-base">${esc(catLabel(cat))}</span>
                                 <span class="text-xs text-gray-400 mt-0.5">${percent}% 차지</span>
                             </div>
                             <div class="flex items-center">
@@ -939,13 +947,14 @@
             annualExps.forEach(e => { if (!catList.includes(e.category)) catList.push(e.category); });
 
             const datasets = catList.map((cat, index) => ({
-                label: cat, data: Array(12).fill(0), backgroundColor: chartColors[index % chartColors.length],
+                key: cat, label: catLabel(cat), data: Array(12).fill(0),
+                backgroundColor: cat ? chartColors[index % chartColors.length] : '#DDDAD6',
                 borderColor: '#ffffff', borderWidth: 1
             }));
 
             annualExps.forEach(e => {
                 const monthIndex = parseInt(e.date.split('-')[1]) - 1;
-                const ds = datasets.find(d => d.label === e.category);
+                const ds = datasets.find(d => d.key === e.category);
                 if (ds) ds.data[monthIndex] += e.amount;
             });
 
@@ -1018,7 +1027,7 @@
             const sortedExps = [...expenses].sort((a, b) => (a.date < b.date ? -1 : 1));
             sortedExps.forEach(e => {
                 const isPaidText = e.dueDate ? (e.isPaid ? '납부완료' : '미납') : '일반지출';
-                csvContent += [e.date, e.category, e.amount, e.dueDate || '', isPaidText, e.recurringId ? 'O' : '', e.memo || '']
+                csvContent += [e.date, catLabel(e.category), e.amount, e.dueDate || '', isPaidText, e.recurringId ? 'O' : '', e.memo || '']
                     .map(csvCell).join(',') + '\n';
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
