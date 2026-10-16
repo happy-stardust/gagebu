@@ -221,7 +221,7 @@
         let categories = load('myCategories', ['공과금', '관리비', '통신료', '보험료', '학원비', '식비']);
         let recurring = load('myRecurring', []);
 
-        const chartColors = ['#E1CEF0', '#FFE0EB', '#BDE0FE', '#DAD9FF', '#FFFFB4', '#FFD1B5', '#e3f7e8', '#EAEAEA'];
+        const chartColors = ['#C9B8E8', '#EDDCA0', '#A9C8E3', '#E8B4BC', '#B8D4B0', '#F2C6A8', '#A8D5CC', '#D4B3D6', '#CFC4B8', '#A9B3BF'];
         let annualChartInstance = null;
         let editingId = null;
         let currentTab = 'home';
@@ -939,7 +939,8 @@
             annualExps.forEach(e => { if (!catList.includes(e.category)) catList.push(e.category); });
 
             const datasets = catList.map((cat, index) => ({
-                label: cat, data: Array(12).fill(0), backgroundColor: chartColors[index % chartColors.length]
+                label: cat, data: Array(12).fill(0), backgroundColor: chartColors[index % chartColors.length],
+                borderColor: '#ffffff', borderWidth: 1
             }));
 
             annualExps.forEach(e => {
